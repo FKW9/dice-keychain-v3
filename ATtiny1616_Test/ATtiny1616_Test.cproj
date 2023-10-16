@@ -73,8 +73,8 @@
           <AcmeProjectActionInfo Action="File" Source="src/cpuint.c" IsConfig="false" Hash="L3e6Af5pnSS+o6YQ/UWcvw" />
           <AcmeProjectActionInfo Action="File" Source="src/protected_io.S" IsConfig="false" Hash="sgFkmFP7h1y8L07bVZahaQ" />
           <AcmeProjectActionInfo Action="File" Source="src/slpctrl.c" IsConfig="false" Hash="UKCvbbajjpkR9cHHPmKctw" />
-          <AcmeProjectActionInfo Action="File" Source="src/tca.c" IsConfig="false" Hash="CYDlsHEOFiKNTYg+S7niMg" />
-          <AcmeProjectActionInfo Action="File" Source="src/tcb.c" IsConfig="false" Hash="yd/9IyUBv0F5AFV6DgLD2Q" />
+          <AcmeProjectActionInfo Action="File" Source="src/tca.c" IsConfig="false" Hash="dplayWtE5/wPkau8JPtSKQ" />
+          <AcmeProjectActionInfo Action="File" Source="src/tcb.c" IsConfig="false" Hash="52VKljgpxYupFfwvDfRrew" />
           <AcmeProjectActionInfo Action="File" Source="utils/assembler.h" IsConfig="false" Hash="jaaWqpCXnRJMciuXpjSfgQ" />
           <AcmeProjectActionInfo Action="File" Source="utils/assembler/gas.h" IsConfig="false" Hash="wV+34zXWOOJ7jfwQibBgLQ" />
           <AcmeProjectActionInfo Action="File" Source="utils/assembler/iar.h" IsConfig="false" Hash="re7qP3QC0FK72z2UZ4UoFg" />
@@ -256,6 +256,9 @@
     <Compile Include="include\driver_init.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="include\led_ctrl.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="include\port.h">
       <SubType>compile</SubType>
     </Compile>
@@ -290,6 +293,9 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\driver_init.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\led_ctrl.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\protected_io.S">

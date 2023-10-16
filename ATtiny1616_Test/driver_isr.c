@@ -35,26 +35,46 @@
 
 #include <driver_init.h>
 #include <compiler.h>
-#include "atmel_start_pins.h"
+#include <led_ctrl.h>
 
 ISR(TCA0_OVF_vect)
 {
 	/* Insert your TCA overflow interrupt handling code */
-	FLASH_EN_toggle_level();
-
+	die_timer_routine();
+	
 	/* The interrupt flag has to be cleared manually */
 	TCA0.SINGLE.INTFLAGS = TCA_SINGLE_OVF_bm;
 }
 
 ISR(TCB0_INT_vect)
 {
-
+	/* Insert your TCB0 interrupt handling code */
+	static uint16_t t = 0;
+	static uint8_t number = 1;
+	
+	if (++t >= 1000){
+		t = 0;
+		if (++number > MAX_DIE_NUMBER)
+			number = 1;
+			
+		set_die_number(number);
+	}
+	
+	/* The interrupt flag has to be cleared manually */
 	TCB0.INTFLAGS = TCB_CAPT_bm;
 }
 
 ISR(TCB1_INT_vect)
 {
-
+	/* Insert your TCB0 interrupt handling code */
+	static uint16_t t = 0;
+		
+	if (++t >= 500){
+		t = 0;
+		FLASH_EN_toggle_level();
+	}
+	
+	/* The interrupt flag has to be cleared manually */
 	TCB1.INTFLAGS = TCB_CAPT_bm;
 }
 

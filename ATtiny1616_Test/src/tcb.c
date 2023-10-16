@@ -43,7 +43,7 @@
 int8_t TIMER_1_init()
 {
 
-	// TCB0.CCMP = 0x0; /* Compare or Capture: 0x0 */
+	TCB0.CCMP = 0xfa; /* Compare or Capture: 0xfa */
 
 	// TCB0.CNT = 0x0; /* Count: 0x0 */
 
@@ -76,7 +76,7 @@ int8_t TIMER_1_init()
 int8_t TIMER_2_init()
 {
 
-	// TCB1.CCMP = 0x0; /* Compare or Capture: 0x0 */
+	TCB1.CCMP = 0xfa; /* Compare or Capture: 0xfa */
 
 	// TCB1.CNT = 0x0; /* Count: 0x0 */
 

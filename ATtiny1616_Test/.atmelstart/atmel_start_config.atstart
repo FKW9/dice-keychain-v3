@@ -53,7 +53,7 @@ drivers:
       enable_osc20m: false
       enable_osculp1k: false
       enable_osculp32k: false
-      enable_tcd0: true
+      enable_tcd0: false
       enable_xosc32kctrla: false
       extosc: 32768
       nvm_clock_source: Main Clock (CLK_MAIN)
@@ -83,7 +83,7 @@ drivers:
       tca_cmp1: 0
       tca_cmp2: 0
       tca_cnt: 0
-      tca_ctrla_clksel: System Clock / 4
+      tca_ctrla_clksel: System Clock
       tca_ctrla_enable: true
       tca_ctrlb_alupd: false
       tca_ctrlb_cmp0en: false
@@ -100,7 +100,7 @@ drivers:
       tca_intctrl_cmp1: false
       tca_intctrl_cmp2: false
       tca_intctrl_ovf: true
-      tca_per: 65535
+      tca_per: 700
     optional_signals: []
     variant: null
     clocks:
@@ -119,7 +119,7 @@ drivers:
     api: Drivers:TCB:Init
     configuration:
       inc_isr_harness: true
-      tcb_ccmp: 0
+      tcb_ccmp: 250
       tcb_cnt: 0
       tcb_ctrla_clksel: CLK_PER (No Prescaling)
       tcb_ctrla_enable: true
@@ -152,7 +152,7 @@ drivers:
     api: Drivers:TCB:Init
     configuration:
       inc_isr_harness: true
-      tcb_ccmp: 0
+      tcb_ccmp: 250
       tcb_cnt: 0
       tcb_ctrla_clksel: CLK_PER (No Prescaling)
       tcb_ctrla_enable: true
@@ -286,6 +286,13 @@ pads:
       pad_pull_config: 'Off'
 toolchain_options:
 - definition:
+    identifier: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::environment_definition::All:Microchip.Studio.gcc:7.0.0
+  configuration:
+    compiler_config:
+      avrgcc_compiler_miscellaneous_OtherFlags: -std=gnu99
+    linker_config:
+      avrgcc_linker_miscellaneous_LinkerFlags: ''
+- definition:
     identifier: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::environment_definition::All:Atmel.Studio:7.0.0
   configuration:
     compiler_config:
@@ -299,11 +306,4 @@ toolchain_options:
       xc8_compiler_miscellaneous_OtherFlags: -std=gnu99
     linker_config:
       xc8_linker_miscellaneous_LinkerFlags: ''
-- definition:
-    identifier: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::environment_definition::All:Microchip.Studio.gcc:7.0.0
-  configuration:
-    compiler_config:
-      avrgcc_compiler_miscellaneous_OtherFlags: -std=gnu99
-    linker_config:
-      avrgcc_linker_miscellaneous_LinkerFlags: ''
 static_files: []
