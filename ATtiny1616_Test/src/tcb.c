@@ -40,10 +40,10 @@
  *
  * \return Initialization status.
  */
-int8_t TIMER_1_init()
+int8_t TIMER_10US_init()
 {
 
-	TCB0.CCMP = 0xfa; /* Compare or Capture: 0xfa */
+	TCB0.CCMP = 0x6; /* Compare or Capture: 0x6 */
 
 	// TCB0.CNT = 0x0; /* Count: 0x0 */
 
@@ -60,43 +60,10 @@ int8_t TIMER_1_init()
 
 	TCB0.INTCTRL = 1 << TCB_CAPT_bp /* Capture or Timeout: enabled */;
 
-	TCB0.CTRLA = TCB_CLKSEL_CLKDIV1_gc  /* CLK_PER (No Prescaling) */
-	             | 1 << TCB_ENABLE_bp   /* Enable: enabled */
-	             | 0 << TCB_RUNSTDBY_bp /* Run Standby: disabled */
-	             | 0 << TCB_SYNCUPD_bp; /* Synchronize Update: disabled */
-
-	return 0;
-}
-
-/**
- * \brief Initialize tcb interface
- *
- * \return Initialization status.
- */
-int8_t TIMER_2_init()
-{
-
-	TCB1.CCMP = 0xfa; /* Compare or Capture: 0xfa */
-
-	// TCB1.CNT = 0x0; /* Count: 0x0 */
-
-	// TCB1.CTRLB = 0 << TCB_ASYNC_bp /* Asynchronous Enable: disabled */
-	//		 | 0 << TCB_CCMPEN_bp /* Pin Output Enable: disabled */
-	//		 | 0 << TCB_CCMPINIT_bp /* Pin Initial State: disabled */
-	//		 | TCB_CNTMODE_INT_gc; /* Periodic Interrupt */
-
-	// TCB1.DBGCTRL = 0 << TCB_DBGRUN_bp; /* Debug Run: disabled */
-
-	// TCB1.EVCTRL = 0 << TCB_CAPTEI_bp /* Event Input Enable: disabled */
-	//		 | 0 << TCB_EDGE_bp /* Event Edge: disabled */
-	//		 | 0 << TCB_FILTER_bp; /* Input Capture Noise Cancellation Filter: disabled */
-
-	TCB1.INTCTRL = 1 << TCB_CAPT_bp /* Capture or Timeout: enabled */;
-
-	TCB1.CTRLA = TCB_CLKSEL_CLKDIV1_gc  /* CLK_PER (No Prescaling) */
-	             | 1 << TCB_ENABLE_bp   /* Enable: enabled */
-	             | 0 << TCB_RUNSTDBY_bp /* Run Standby: disabled */
-	             | 0 << TCB_SYNCUPD_bp; /* Synchronize Update: disabled */
+	// TCB0.CTRLA = TCB_CLKSEL_CLKDIV1_gc /* CLK_PER (No Prescaling) */
+	//		 | 0 << TCB_ENABLE_bp /* Enable: disabled */
+	//		 | 0 << TCB_RUNSTDBY_bp /* Run Standby: disabled */
+	//		 | 0 << TCB_SYNCUPD_bp; /* Synchronize Update: disabled */
 
 	return 0;
 }

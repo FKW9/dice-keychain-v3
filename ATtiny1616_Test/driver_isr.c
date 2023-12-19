@@ -35,53 +35,25 @@
 
 #include <driver_init.h>
 #include <compiler.h>
-#include <led_ctrl.h>
 
-ISR(TCA0_OVF_vect)
+ISR(TCA0_CMP0_vect)
 {
-	/* Insert your TCA overflow interrupt handling code */
-	die_timer_routine();
-	
+	/* Insert your TCA Compare 0 Interrupt handling code here */
+
 	/* The interrupt flag has to be cleared manually */
-	TCA0.SINGLE.INTFLAGS = TCA_SINGLE_OVF_bm;
+	TCA0.SINGLE.INTFLAGS = TCA_SINGLE_CMP0_bm;
 }
 
 ISR(TCB0_INT_vect)
 {
-	/* Insert your TCB0 interrupt handling code */
-	static uint16_t t = 0;
-	static uint8_t number = 1;
-	
-	if (++t >= 1000){
-		t = 0;
-		if (++number > MAX_DIE_NUMBER)
-			number = 1;
-			
-		set_die_number(number);
-	}
-	
-	/* The interrupt flag has to be cleared manually */
+
 	TCB0.INTFLAGS = TCB_CAPT_bm;
 }
 
-ISR(TCB1_INT_vect)
+ISR(PORTB_PORT_vect)
 {
-	/* Insert your TCB0 interrupt handling code */
-	static uint16_t t = 0;
-		
-	if (++t >= 500){
-		t = 0;
-		FLASH_EN_toggle_level();
-	}
-	
-	/* The interrupt flag has to be cleared manually */
-	TCB1.INTFLAGS = TCB_CAPT_bm;
-}
-
-ISR(PORTC_PORT_vect)
-{
-	/* Insert your PORTC interrupt handling code here */
+	/* Insert your PORTB interrupt handling code here */
 
 	/* Clear interrupt flags */
-	VPORTC_INTFLAGS = (1 << 0) | (1 << 1) | (1 << 2) | (1 << 3);
+	VPORTB_INTFLAGS = (1 << 0) | (1 << 1) | (1 << 2) | (1 << 3) | (1 << 4) | (1 << 5);
 }

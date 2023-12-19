@@ -1,5 +1,5 @@
 <AvrGcc>
-  <avrgcc.common.Device>-mmcu=attiny1616 -B "%24(PackRepoDir)\Atmel\ATtiny_DFP\1.9.337\gcc\dev\attiny1616"</avrgcc.common.Device>
+  <avrgcc.common.Device>-mmcu=attiny1616 -B "%24(PackRepoDir)\atmel\ATtiny_DFP\1.9.337\gcc\dev\attiny1616"</avrgcc.common.Device>
   <avrgcc.common.outputfiles.hex>True</avrgcc.common.outputfiles.hex>
   <avrgcc.common.outputfiles.lss>True</avrgcc.common.outputfiles.lss>
   <avrgcc.common.outputfiles.eep>True</avrgcc.common.outputfiles.eep>
@@ -18,8 +18,9 @@
       <Value>../utils</Value>
       <Value>../utils/assembler</Value>
       <Value>../</Value>
+      <Value>%24(PackRepoDir)\atmel\ATtiny_DFP\1.9.337\include\</Value>
       <Value>../Config</Value>
-      <Value>%24(PackRepoDir)\Atmel\ATtiny_DFP\1.9.337\include\</Value>
+      <Value>../examples/include</Value>
     </ListValues>
   </avrgcc.compiler.directories.IncludePaths>
   <avrgcc.compiler.optimization.level>Optimize for size (-Os)</avrgcc.compiler.optimization.level>
@@ -33,12 +34,13 @@
   </avrgcc.linker.libraries.Libraries>
   <avrgcc.assembler.general.IncludePaths>
     <ListValues>
+      <Value>%24(PackRepoDir)\atmel\ATtiny_DFP\1.9.337\include\</Value>
       <Value>../Config</Value>
+      <Value>../examples/include</Value>
       <Value>../include</Value>
       <Value>../utils</Value>
       <Value>../utils/assembler</Value>
       <Value>../</Value>
-      <Value>%24(PackRepoDir)\Atmel\ATtiny_DFP\1.9.337\include\</Value>
     </ListValues>
   </avrgcc.assembler.general.IncludePaths>
 </AvrGcc>

@@ -42,12 +42,12 @@
 #include <atmel_start_pins.h>
 
 #include <clkctrl.h>
+#include <vref.h>
+
+#include <adc_basic.h>
 
 #include <interrupt_avr8.h>
 #include <tca.h>
-
-#include <interrupt_avr8.h>
-#include <tcb.h>
 
 #include <interrupt_avr8.h>
 #include <tcb.h>

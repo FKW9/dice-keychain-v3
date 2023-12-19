@@ -34,9 +34,7 @@
 extern "C" {
 #endif
 
-int8_t TIMER_1_init();
-
-int8_t TIMER_2_init();
+int8_t TIMER_10US_init();
 
 #ifdef __cplusplus
 }

@@ -26,17 +26,17 @@ drivers:
     functionality: System
     api: Drivers:CLKCTRL:Init
     configuration:
-      $input: 250000
+      $input: 625000
       $input_id: Main Clock (CLK_MAIN)
-      RESERVED_InputFreq: 250000
+      RESERVED_InputFreq: 625000
       RESERVED_InputFreq_id: Main Clock (CLK_MAIN)
       _$freq_output_32KHz divided by 32: 1024
       _$freq_output_External Clock (EXTCLK): 32768
-      _$freq_output_Main Clock (CLK_MAIN): 250000
-      _$freq_output_TCD0 Clock (CLK_TCD0): 250000
-      clkctrl_mclkctrla_cksel: 16MHz Internal Oscillator (OSC16M)
+      _$freq_output_Main Clock (CLK_MAIN): 625000
+      _$freq_output_TCD0 Clock (CLK_TCD0): 625000
+      clkctrl_mclkctrla_cksel: 20MHz Internal Oscillator (OSC20M)
       clkctrl_mclkctrla_clkout: false
-      clkctrl_mclkctrlb_pdiv: '64'
+      clkctrl_mclkctrlb_pdiv: '32'
       clkctrl_mclkctrlb_pen: true
       clkctrl_mclklock_locken: false
       clkctrl_osc16mctrla_runstdby: false
@@ -72,21 +72,87 @@ drivers:
           external: false
           external_frequency: 0
         configuration: {}
-  TIMER_0:
-    user_label: TIMER_0
+  VREF_0:
+    user_label: VREF_0
+    definition: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::VREF::driver_config_definition::VREF::Drivers:VREF:Init
+    functionality: VREF
+    api: Drivers:VREF:Init
+    configuration:
+      adc0_force_enable: true
+      adc0_voltage_reference: Voltage reference at 2.5V
+      adc1_force_enable: false
+      adc1_voltage_reference: Voltage reference at 0.55V
+      dac0_force_enable: false
+      dac0_voltage_reference: Voltage reference at 0.55V
+      dac1_force_enable: false
+      dac1_voltage_reference: Voltage reference at 0.55V
+      dac2_force_enable: false
+      dac2_voltage_reference: Voltage reference at 0.55V
+    optional_signals: []
+    variant: null
+    clocks:
+      domain_group: null
+  ADC_0:
+    user_label: ADC_0
+    definition: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::ADC0::driver_config_definition::ADC.Basic::Drivers:ADC:Basic
+    functionality: ADC
+    api: Drivers:ADC:Basic
+    configuration:
+      adc_calib_dutycyc: 50% Duty cycle
+      adc_ctrla_enable: true
+      adc_ctrla_freerun: false
+      adc_ctrla_ressel: 10-bit mode
+      adc_ctrla_runstby: false
+      adc_ctrlb_sampnum: 1 ADC sample
+      adc_ctrlc_presc: CLK_PER divided by 2
+      adc_ctrlc_refsel: Internal reference
+      adc_ctrlc_sampcap: false
+      adc_ctrld_asdv: false
+      adc_ctrld_initdly: Delay 0 CLK_ADC cycles
+      adc_ctrld_sampdly: 0
+      adc_ctrle_wincm: No Window Comparison
+      adc_dbgctrl_dbgrun: false
+      adc_evctrl_startei: false
+      adc_intctrl_resrdy: true
+      adc_intctrl_wcmp: false
+      adc_muxpos_muxpos: ADC input pin 1
+      adc_sampctrl_samplen: 0
+      adc_sampling_config: false
+      adc_winht: 0
+      adc_winlt: 0
+    optional_signals:
+    - identifier: ADC_0:AIN/1
+      pad: PA1
+      mode: Enabled
+      configuration: null
+      definition: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::optional_signal_definition::ADC0.AIN.1
+      name: ADC0/AIN/1
+      label: AIN/1
+    variant: null
+    clocks:
+      domain_group:
+        nodes:
+        - name: ADC
+          input: Main Clock (CLK_MAIN)
+          external: false
+          external_frequency: 0
+        configuration:
+          adc_clock_source: Main Clock (CLK_MAIN)
+  TIMER_10MS:
+    user_label: TIMER_10MS
     definition: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::TCA0::driver_config_definition::Normal.Mode::Drivers:TCA:Init
     functionality: Timer
     api: Drivers:TCA:Init
     configuration:
       inc_isr_harness: true
-      tca_cmp0: 0
+      tca_cmp0: 6250
       tca_cmp1: 0
       tca_cmp2: 0
       tca_cnt: 0
       tca_ctrla_clksel: System Clock
-      tca_ctrla_enable: true
+      tca_ctrla_enable: false
       tca_ctrlb_alupd: false
-      tca_ctrlb_cmp0en: false
+      tca_ctrlb_cmp0en: true
       tca_ctrlb_cmp1en: false
       tca_ctrlb_cmp2en: false
       tca_ctrlb_wgmode: Normal Mode
@@ -96,11 +162,11 @@ drivers:
       tca_dbgctrl_dbgrun: false
       tca_evctrl_cntei: false
       tca_evctrl_evact: Count on positive edge event
-      tca_intctrl_cmp0: false
+      tca_intctrl_cmp0: true
       tca_intctrl_cmp1: false
       tca_intctrl_cmp2: false
-      tca_intctrl_ovf: true
-      tca_per: 700
+      tca_intctrl_ovf: false
+      tca_per: 65535
     optional_signals: []
     variant: null
     clocks:
@@ -112,50 +178,17 @@ drivers:
           external_frequency: 0
         configuration:
           tca_clock_source: Main Clock (CLK_MAIN)
-  TIMER_1:
-    user_label: TIMER_1
+  TIMER_10US:
+    user_label: TIMER_10US
     definition: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::TCB0::driver_config_definition::Init::Drivers:TCB:Init
     functionality: Timer
     api: Drivers:TCB:Init
     configuration:
       inc_isr_harness: true
-      tcb_ccmp: 250
+      tcb_ccmp: 6
       tcb_cnt: 0
       tcb_ctrla_clksel: CLK_PER (No Prescaling)
-      tcb_ctrla_enable: true
-      tcb_ctrla_runstdby: false
-      tcb_ctrla_syncupd: false
-      tcb_ctrlb_async: false
-      tcb_ctrlb_ccmpen: false
-      tcb_ctrlb_ccmpinit: false
-      tcb_ctrlb_cntmode: Periodic Interrupt
-      tcb_dbgctrl_dbgrun: false
-      tcb_evctrl_captei: false
-      tcb_evctrl_edge: false
-      tcb_evctrl_filter: false
-      tcb_intctrl_capt: true
-    optional_signals: []
-    variant: null
-    clocks:
-      domain_group:
-        nodes:
-        - name: TCB
-          input: Main Clock (CLK_MAIN)
-          external: false
-          external_frequency: 0
-        configuration:
-          tcb_clock_source: Main Clock (CLK_MAIN)
-  TIMER_2:
-    user_label: TIMER_2
-    definition: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::TCB1::driver_config_definition::Init::Drivers:TCB:Init
-    functionality: Timer
-    api: Drivers:TCB:Init
-    configuration:
-      inc_isr_harness: true
-      tcb_ccmp: 250
-      tcb_cnt: 0
-      tcb_ctrla_clksel: CLK_PER (No Prescaling)
-      tcb_ctrla_enable: true
+      tcb_ctrla_enable: false
       tcb_ctrla_runstdby: false
       tcb_ctrla_syncupd: false
       tcb_ctrlb_async: false
@@ -201,7 +234,7 @@ drivers:
     functionality: System
     api: Drivers:SLPCTRL:Init
     configuration:
-      slpctrl_ctrla_sen: false
+      slpctrl_ctrla_sen: true
       slpctrl_ctrla_smode: Power-down Mode
     optional_signals: []
     variant: null
@@ -230,52 +263,45 @@ drivers:
         configuration:
           bod_clock_source: 32KHz divided by 32
 pads:
-  LED_A:
-    name: PA4
-    definition: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::pad::PA4
-    mode: Digital input
-    user_label: LED_A
-    configuration: null
-  LED_B:
-    name: PA5
-    definition: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::pad::PA5
-    mode: Digital input
-    user_label: LED_B
-    configuration: null
-  LED_D:
-    name: PB1
-    definition: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::pad::PB1
-    mode: Digital input
-    user_label: LED_D
-    configuration: null
-  LED_C:
-    name: PB0
-    definition: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::pad::PB0
-    mode: Digital input
-    user_label: LED_C
-    configuration: null
-  EN_5V:
-    name: PC0
-    definition: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::pad::PC0
+  ADC_EN:
+    name: PA2
+    definition: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::pad::PA2
     mode: Digital output
-    user_label: EN_5V
+    user_label: ADC_EN
     configuration: null
   FLASH_EN:
-    name: PC1
-    definition: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::pad::PC1
+    name: PA3
+    definition: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::pad::PA3
     mode: Digital output
     user_label: FLASH_EN
     configuration: null
-  EN_3V3:
-    name: PC2
-    definition: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::pad::PC2
+  LED1_EN:
+    name: PA4
+    definition: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::pad::PA4
     mode: Digital output
-    user_label: EN_3V3
-    configuration:
-      pad_initial_level: High
+    user_label: LED1_EN
+    configuration: null
+  LED2_EN:
+    name: PA5
+    definition: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::pad::PA5
+    mode: Digital output
+    user_label: LED2_EN
+    configuration: null
+  LED3_EN:
+    name: PA6
+    definition: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::pad::PA6
+    mode: Digital output
+    user_label: LED3_EN
+    configuration: null
+  LED4_EN:
+    name: PA7
+    definition: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::pad::PA7
+    mode: Digital output
+    user_label: LED4_EN
+    configuration: null
   BTN:
-    name: PC3
-    definition: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::pad::PC3
+    name: PB5
+    definition: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::pad::PB5
     mode: Advanced
     user_label: BTN
     configuration:
@@ -284,14 +310,93 @@ pads:
       pad_invert: Not inverted
       pad_isc: Sense Both Edges
       pad_pull_config: 'Off'
+  PB4:
+    name: PB4
+    definition: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::pad::PB4
+    mode: Advanced
+    user_label: PB4
+    configuration:
+      pad_dir: In
+      pad_initial_level: Low
+      pad_invert: Not inverted
+      pad_isc: Digital Input Buffer disabled
+      pad_pull_config: Pull-up
+  LED9_EN:
+    name: PB3
+    definition: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::pad::PB3
+    mode: Digital output
+    user_label: LED9_EN
+    configuration: null
+  B_EN:
+    name: PB2
+    definition: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::pad::PB2
+    mode: Digital output
+    user_label: B_EN
+    configuration:
+      pad_initial_level: High
+  G_EN:
+    name: PB1
+    definition: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::pad::PB1
+    mode: Digital output
+    user_label: G_EN
+    configuration:
+      pad_initial_level: High
+  R_EN:
+    name: PB0
+    definition: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::pad::PB0
+    mode: Digital output
+    user_label: R_EN
+    configuration:
+      pad_initial_level: High
+  LED5_EN:
+    name: PC0
+    definition: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::pad::PC0
+    mode: Digital output
+    user_label: LED5_EN
+    configuration: null
+  LED6_EN:
+    name: PC1
+    definition: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::pad::PC1
+    mode: Digital output
+    user_label: LED6_EN
+    configuration: null
+  LED7_EN:
+    name: PC2
+    definition: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::pad::PC2
+    mode: Digital output
+    user_label: LED7_EN
+    configuration: null
+  LED8_EN:
+    name: PC3
+    definition: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::pad::PC3
+    mode: Digital output
+    user_label: LED8_EN
+    configuration: null
+  PA0:
+    name: PA0
+    definition: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::pad::PA0
+    mode: Advanced
+    user_label: PA0
+    configuration:
+      pad_dir: In
+      pad_initial_level: Low
+      pad_invert: Not inverted
+      pad_isc: Digital Input Buffer disabled
+      pad_pull_config: Pull-up
+  ADC:
+    name: PA1
+    definition: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::pad::PA1
+    mode: Analog
+    user_label: ADC
+    configuration: null
 toolchain_options:
 - definition:
-    identifier: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::environment_definition::All:Microchip.Studio.gcc:7.0.0
+    identifier: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::environment_definition::All:Microchip.Studio.xc8:7.0.0
   configuration:
     compiler_config:
-      avrgcc_compiler_miscellaneous_OtherFlags: -std=gnu99
+      xc8_compiler_miscellaneous_OtherFlags: -std=gnu99
     linker_config:
-      avrgcc_linker_miscellaneous_LinkerFlags: ''
+      xc8_linker_miscellaneous_LinkerFlags: ''
 - definition:
     identifier: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::environment_definition::All:Atmel.Studio:7.0.0
   configuration:
@@ -300,10 +405,10 @@ toolchain_options:
     linker_config:
       avrgcc_linker_miscellaneous_LinkerFlags: ''
 - definition:
-    identifier: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::environment_definition::All:Microchip.Studio.xc8:7.0.0
+    identifier: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::environment_definition::All:Microchip.Studio.gcc:7.0.0
   configuration:
     compiler_config:
-      xc8_compiler_miscellaneous_OtherFlags: -std=gnu99
+      avrgcc_compiler_miscellaneous_OtherFlags: -std=gnu99
     linker_config:
-      xc8_linker_miscellaneous_LinkerFlags: ''
+      avrgcc_linker_miscellaneous_LinkerFlags: ''
 static_files: []

@@ -40,10 +40,10 @@
  *
  * \return Initialization status.
  */
-int8_t TIMER_0_init()
+int8_t TIMER_10MS_init()
 {
 
-	// TCA0.SINGLE.CMP0 = 0x0; /* Compare Register 0: 0x0 */
+	TCA0.SINGLE.CMP0 = 0x186a; /* Compare Register 0: 0x186a */
 
 	// TCA0.SINGLE.CMP1 = 0x0; /* Compare Register 1: 0x0 */
 
@@ -51,11 +51,11 @@ int8_t TIMER_0_init()
 
 	// TCA0.SINGLE.CNT = 0x0; /* Count: 0x0 */
 
-	// TCA0.SINGLE.CTRLB = 0 << TCA_SINGLE_ALUPD_bp /* Auto Lock Update: disabled */
-	//		 | 0 << TCA_SINGLE_CMP0EN_bp /* Compare 0 Enable: disabled */
-	//		 | 0 << TCA_SINGLE_CMP1EN_bp /* Compare 1 Enable: disabled */
-	//		 | 0 << TCA_SINGLE_CMP2EN_bp /* Compare 2 Enable: disabled */
-	//		 | TCA_SINGLE_WGMODE_NORMAL_gc; /*  */
+	TCA0.SINGLE.CTRLB = 0 << TCA_SINGLE_ALUPD_bp       /* Auto Lock Update: disabled */
+	                    | 1 << TCA_SINGLE_CMP0EN_bp    /* Compare 0 Enable: enabled */
+	                    | 0 << TCA_SINGLE_CMP1EN_bp    /* Compare 1 Enable: disabled */
+	                    | 0 << TCA_SINGLE_CMP2EN_bp    /* Compare 2 Enable: disabled */
+	                    | TCA_SINGLE_WGMODE_NORMAL_gc; /*  */
 
 	// TCA0.SINGLE.CTRLC = 0 << TCA_SINGLE_CMP0OV_bp /* Compare 0 Waveform Output Value: disabled */
 	//		 | 0 << TCA_SINGLE_CMP1OV_bp /* Compare 1 Waveform Output Value: disabled */
@@ -66,15 +66,15 @@ int8_t TIMER_0_init()
 	// TCA0.SINGLE.EVCTRL = 0 << TCA_SINGLE_CNTEI_bp /* Count on Event Input: disabled */
 	//		 | TCA_SINGLE_EVACT_POSEDGE_gc /* Count on positive edge event */;
 
-	TCA0.SINGLE.INTCTRL = 0 << TCA_SINGLE_CMP0_bp   /* Compare 0 Interrupt: disabled */
+	TCA0.SINGLE.INTCTRL = 1 << TCA_SINGLE_CMP0_bp   /* Compare 0 Interrupt: enabled */
 	                      | 0 << TCA_SINGLE_CMP1_bp /* Compare 1 Interrupt: disabled */
 	                      | 0 << TCA_SINGLE_CMP2_bp /* Compare 2 Interrupt: disabled */
-	                      | 1 << TCA_SINGLE_OVF_bp; /* Overflow Interrupt: enabled */
+	                      | 0 << TCA_SINGLE_OVF_bp; /* Overflow Interrupt: disabled */
 
-	TCA0.SINGLE.PER = 0x2bc; /* Period: 0x2bc */
+	// TCA0.SINGLE.PER = 0xffff; /* Period: 0xffff */
 
-	TCA0.SINGLE.CTRLA = TCA_SINGLE_CLKSEL_DIV1_gc /* System Clock */
-	                    | 1 << TCA_SINGLE_ENABLE_bp /* Module Enable: enabled */;
+	// TCA0.SINGLE.CTRLA = TCA_SINGLE_CLKSEL_DIV1_gc /* System Clock */
+	//		 | 0 << TCA_SINGLE_ENABLE_bp /* Module Enable: disabled */;
 
 	return 0;
 }
