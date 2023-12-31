@@ -71,10 +71,10 @@ int8_t TIMER_10MS_init()
 	                      | 0 << TCA_SINGLE_CMP2_bp /* Compare 2 Interrupt: disabled */
 	                      | 0 << TCA_SINGLE_OVF_bp; /* Overflow Interrupt: disabled */
 
-	// TCA0.SINGLE.PER = 0xffff; /* Period: 0xffff */
+	TCA0.SINGLE.PER = 0x186a; /* Period: 0x186a */
 
-	// TCA0.SINGLE.CTRLA = TCA_SINGLE_CLKSEL_DIV1_gc /* System Clock */
-	//		 | 0 << TCA_SINGLE_ENABLE_bp /* Module Enable: disabled */;
+	TCA0.SINGLE.CTRLA = TCA_SINGLE_CLKSEL_DIV1_gc /* System Clock */
+	                    | 1 << TCA_SINGLE_ENABLE_bp /* Module Enable: enabled */;
 
 	return 0;
 }

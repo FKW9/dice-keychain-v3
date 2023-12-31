@@ -35,25 +35,3 @@
 
 #include <driver_init.h>
 #include <compiler.h>
-
-ISR(TCA0_CMP0_vect)
-{
-	/* Insert your TCA Compare 0 Interrupt handling code here */
-
-	/* The interrupt flag has to be cleared manually */
-	TCA0.SINGLE.INTFLAGS = TCA_SINGLE_CMP0_bm;
-}
-
-ISR(TCB0_INT_vect)
-{
-
-	TCB0.INTFLAGS = TCB_CAPT_bm;
-}
-
-ISR(PORTB_PORT_vect)
-{
-	/* Insert your PORTB interrupt handling code here */
-
-	/* Clear interrupt flags */
-	VPORTB_INTFLAGS = (1 << 0) | (1 << 1) | (1 << 2) | (1 << 3) | (1 << 4) | (1 << 5);
-}

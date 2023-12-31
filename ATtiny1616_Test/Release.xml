@@ -19,8 +19,8 @@
       <Value>../utils/assembler</Value>
       <Value>../</Value>
       <Value>%24(PackRepoDir)\atmel\ATtiny_DFP\1.9.337\include\</Value>
-      <Value>../Config</Value>
       <Value>../examples/include</Value>
+      <Value>../Config</Value>
     </ListValues>
   </avrgcc.compiler.directories.IncludePaths>
   <avrgcc.compiler.optimization.level>Optimize for size (-Os)</avrgcc.compiler.optimization.level>
