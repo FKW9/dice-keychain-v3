@@ -24,7 +24,7 @@ float read_cell_voltage(void);
 void adc_disable();
 void adc_enable();
 
-volatile uint8_t sleep_flag, blink_flag, blink_count = 0;
+volatile uint8_t blink_flag, blink_count = 0;
 volatile uint8_t number = 1;
 volatile uint8_t delay_slowdown = DELAY_SLOWDOWN;
 volatile uint8_t current_dice_state, previous_dice_state = 0;
@@ -91,7 +91,7 @@ ISR(TCA0_CMP0_vect)
 				else
 				{
 					if (BTN_get_level() == 0) {
-						prepare_sleep();
+						goto_sleep();
 					}
 				}
 			}
@@ -143,7 +143,7 @@ ISR(PORTA_PORT_vect)
 		current_dice_state = 1;
 	}
 	else {
-		prepare_sleep();
+		goto_sleep();
 	}
 	
 	/* Clear interrupt flags */
@@ -155,14 +155,7 @@ int main(void)
 	atmel_start_init();
 	goto_sleep();
 	
-	while (1) {
-		
-		if (sleep_flag)
-		{
-			goto_sleep();
-		}
-
-	}
+	while (1) {}
 }
 
 void reset_state(void){
@@ -173,15 +166,12 @@ void reset_state(void){
 	delay_slowdown = DELAY_SLOWDOWN;
 }
 
-void prepare_sleep(void){
+void goto_sleep(void){
+	
 	TCB0.CTRLA &= ~(1 << TCB_ENABLE_bp);
 	TCA0.SINGLE.CTRLA &= ~(1 << TCA_SINGLE_ENABLE_bp);
 	leds_off();
 	reset_state();
-	sleep_flag = 1;
-}
-
-void goto_sleep(void){
 	
 	if (++_executions >= EXECS_TILL_NEW_SEED)
 	{
@@ -264,36 +254,7 @@ void goto_sleep(void){
 	B_EN_set_isc(PORT_ISC_INPUT_DISABLE_gc);
 	
 	sleep_cpu();
-	sleep_flag = 0;
 	start_init_after_sleep();
-}
-
-void enable_rng_adc_channels(void){
-	/* PORT setting on PB4 */
-	PB4_set_level(false);
-	PB4_set_dir(PORT_DIR_IN);
-	PB4_set_pull_mode(PORT_PULL_OFF);
-	PB4_set_isc(PORT_ISC_INTDISABLE_gc);
-	
-	/* PORT setting on PA0 */
-	PA3_set_level(false);
-	PA3_set_dir(PORT_DIR_IN);
-	PA3_set_pull_mode(PORT_PULL_OFF);
-	PA3_set_isc(PORT_ISC_INTDISABLE_gc);
-}
-
-void disable_rng_adc_channels(void){
-	/* PORT setting on PB4 */
-	PB4_set_level(false);
-	PB4_set_dir(PORT_DIR_IN);
-	PB4_set_pull_mode(PORT_PULL_UP);
-	PB4_set_isc(PORT_ISC_INPUT_DISABLE_gc);
-	
-	/* PORT setting on PA0 */
-	PA3_set_level(false);
-	PA3_set_dir(PORT_DIR_IN);
-	PA3_set_pull_mode(PORT_PULL_UP);
-	PA3_set_isc(PORT_ISC_INPUT_DISABLE_gc);
 }
 
 void generate_new_seed(void){
@@ -317,10 +278,8 @@ float read_cell_voltage(void){
 	ADC_EN_set_level(false);
 	ADC_EN_set_dir(PORT_DIR_OUT);
 	
-	// 31.3.2.5 ADC Conversion Result
 	// After the conversion is complete (RESRDY is '1'), the conversion result RES is available in the ADC Result Register (ADCn.RES). The result for a 10-bit conversion is given as:
-	// RES = (1023 x VIN) / VREF
-	// VREF = 2.5V
+	// RES = (1023 x VIN) / VREF, VREF = 2.5V
 	// Multiply by 2 because of 50/50 voltage divider
 	float voltage = (ADC_0_get_conversion(1)* 2.5 / 1023) * 2;
 	
@@ -401,4 +360,32 @@ void adc_disable()
 	ADC_set_dir(PORT_DIR_IN);
 	ADC_set_pull_mode(PORT_PULL_UP);
 	ADC_set_isc(PORT_ISC_INPUT_DISABLE_gc);
+}
+
+void enable_rng_adc_channels(void){
+	/* PORT setting on PB4 */
+	PB4_set_level(false);
+	PB4_set_dir(PORT_DIR_IN);
+	PB4_set_pull_mode(PORT_PULL_OFF);
+	PB4_set_isc(PORT_ISC_INTDISABLE_gc);
+	
+	/* PORT setting on PA0 */
+	PA3_set_level(false);
+	PA3_set_dir(PORT_DIR_IN);
+	PA3_set_pull_mode(PORT_PULL_OFF);
+	PA3_set_isc(PORT_ISC_INTDISABLE_gc);
+}
+
+void disable_rng_adc_channels(void){
+	/* PORT setting on PB4 */
+	PB4_set_level(false);
+	PB4_set_dir(PORT_DIR_IN);
+	PB4_set_pull_mode(PORT_PULL_UP);
+	PB4_set_isc(PORT_ISC_INPUT_DISABLE_gc);
+	
+	/* PORT setting on PA0 */
+	PA3_set_level(false);
+	PA3_set_dir(PORT_DIR_IN);
+	PA3_set_pull_mode(PORT_PULL_UP);
+	PA3_set_isc(PORT_ISC_INPUT_DISABLE_gc);
 }
