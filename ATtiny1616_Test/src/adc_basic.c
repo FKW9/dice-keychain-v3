@@ -36,19 +36,15 @@
  */
 #include <adc_basic.h>
 
-/** Function pointer to callback function called by IRQ.
-    NULL=default value: No callback function is to be used.
-*/
-
-adc_irq_cb_t ADC_0_cb = NULL; /**
-                               * \brief Initialize ADC interface
-                               * If module is configured to disabled state, the clock to the ADC is disabled
-                               * if this is supported by the device's clock system.
-                               *
-                               * \return Initialization status.
-                               * \retval 0 the ADC init was successful
-                               * \retval 1 the ADC init was not successful
-                               */
+/**
+ * \brief Initialize ADC interface
+ * If module is configured to disabled state, the clock to the ADC is disabled
+ * if this is supported by the device's clock system.
+ *
+ * \return Initialization status.
+ * \retval 0 the ADC init was successful
+ * \retval 1 the ADC init was not successful
+ */
 int8_t ADC_0_init()
 {
 
@@ -70,8 +66,8 @@ int8_t ADC_0_init()
 
 	// ADC0.EVCTRL = 0 << ADC_STARTEI_bp; /* Start Event Input Enable: disabled */
 
-	ADC0.INTCTRL = 1 << ADC_RESRDY_bp  /* Result Ready Interrupt Enable: enabled */
-	               | 0 << ADC_WCMP_bp; /* Window Comparator Interrupt Enable: disabled */
+	// ADC0.INTCTRL = 0 << ADC_RESRDY_bp /* Result Ready Interrupt Enable: disabled */
+	//		 | 0 << ADC_WCMP_bp; /* Window Comparator Interrupt Enable: disabled */
 
 	ADC0.MUXPOS = ADC_MUXPOS_AIN1_gc; /* ADC input pin 1 */
 
@@ -172,26 +168,4 @@ adc_result_t ADC_0_get_conversion(adc_0_channel_t channel)
 uint8_t ADC_0_get_resolution()
 {
 	return (ADC0.CTRLA & ADC_RESSEL_bm) ? 8 : 10;
-}
-
-/**
- * \brief Register a callback function to be called at the end of the ADC ISR.
- *
- * \param[in] f Pointer to function to be called
- *
- * \return Nothing.
- */
-void ADC_0_register_callback(adc_irq_cb_t f)
-{
-	ADC_0_cb = f;
-}
-
-ISR(ADC0_RESRDY_vect)
-{
-	// Clear the interrupt flag
-	ADC0.INTFLAGS |= ADC_RESRDY_bm;
-
-	if (ADC_0_cb != NULL) {
-		ADC_0_cb();
-	}
 }

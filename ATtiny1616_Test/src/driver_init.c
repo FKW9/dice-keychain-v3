@@ -68,341 +68,86 @@ void system_init()
 	mcu_init();
 
 	/* PORT setting on PA0 */
+	PA0_set_level(false);
+	PA0_set_dir(PORT_DIR_IN);
+	PA0_set_pull_mode(PORT_PULL_UP);
+	PA0_set_inverted(false);
+	PA0_set_isc(PORT_ISC_INPUT_DISABLE_gc);
 
-	PA0_set_level(
-	    // <y> Initial level
-	    // <id> pad_initial_level
-	    // <false"> Low
-	    // <true"> High
-	    false);
-
-	PA0_set_dir(
-	    // <y> Pin direction
-	    // <id> pad_dir
-	    // <PORT_DIR_OFF"> Off
-	    // <PORT_DIR_IN"> In
-	    // <PORT_DIR_OUT"> Out
-	    PORT_DIR_IN);
-
-	PA0_set_pull_mode(
-	    // <y> Pull configuration
-	    // <id> pad_pull_config
-	    // <PORT_PULL_OFF"> Off
-	    // <PORT_PULL_UP"> Pull-up
-	    PORT_PULL_UP);
-
-	PA0_set_inverted(
-	    // <y> Invert I/O on pin
-	    // <id> pad_invert
-	    // <false"> Not inverted
-	    // <true"> Inverted
-	    false);
-
-	PA0_set_isc(
-	    // <y> Pin Input/Sense Configuration
-	    // <id> pad_isc
-	    // <PORT_ISC_INTDISABLE_gc"> Interrupt disabled but input buffer enabled
-	    // <PORT_ISC_BOTHEDGES_gc"> Sense Both Edges
-	    // <PORT_ISC_RISING_gc"> Sense Rising Edge
-	    // <PORT_ISC_FALLING_gc"> Sense Falling Edge
-	    // <PORT_ISC_INPUT_DISABLE_gc"> Digital Input Buffer disabled
-	    // <PORT_ISC_LEVEL_gc"> Sense low Level
-	    PORT_ISC_INPUT_DISABLE_gc);
-
-	/* PORT setting on PA2 */
-
-	// Set pin direction to output
-
-	ADC_EN_set_level(
-	    // <y> Initial level
-	    // <id> pad_initial_level
-	    // <false"> Low
-	    // <true"> High
-	    false);
-
-	ADC_EN_set_dir(PORT_DIR_OUT);
+	/* PORT setting on PB4 */
+	PB4_set_level(false);
+	PB4_set_dir(PORT_DIR_IN);
+	PB4_set_pull_mode(PORT_PULL_UP);
+	PB4_set_inverted(false);
+	PB4_set_isc(PORT_ISC_INPUT_DISABLE_gc);
 
 	/* PORT setting on PA3 */
+	PA3_set_level(false);
+	PA3_set_dir(PORT_DIR_IN);
+	PA3_set_pull_mode(PORT_PULL_UP);
+	PA3_set_inverted(false);
+	PA3_set_isc(PORT_ISC_INPUT_DISABLE_gc);
 
-	PA3_set_level(
-	    // <y> Initial level
-	    // <id> pad_initial_level
-	    // <false"> Low
-	    // <true"> High
-	    false);
-
-	PA3_set_dir(
-	    // <y> Pin direction
-	    // <id> pad_dir
-	    // <PORT_DIR_OFF"> Off
-	    // <PORT_DIR_IN"> In
-	    // <PORT_DIR_OUT"> Out
-	    PORT_DIR_IN);
-
-	PA3_set_pull_mode(
-	    // <y> Pull configuration
-	    // <id> pad_pull_config
-	    // <PORT_PULL_OFF"> Off
-	    // <PORT_PULL_UP"> Pull-up
-	    PORT_PULL_UP);
-
-	PA3_set_inverted(
-	    // <y> Invert I/O on pin
-	    // <id> pad_invert
-	    // <false"> Not inverted
-	    // <true"> Inverted
-	    false);
-
-	PA3_set_isc(
-	    // <y> Pin Input/Sense Configuration
-	    // <id> pad_isc
-	    // <PORT_ISC_INTDISABLE_gc"> Interrupt disabled but input buffer enabled
-	    // <PORT_ISC_BOTHEDGES_gc"> Sense Both Edges
-	    // <PORT_ISC_RISING_gc"> Sense Rising Edge
-	    // <PORT_ISC_FALLING_gc"> Sense Falling Edge
-	    // <PORT_ISC_INPUT_DISABLE_gc"> Digital Input Buffer disabled
-	    // <PORT_ISC_LEVEL_gc"> Sense low Level
-	    PORT_ISC_INPUT_DISABLE_gc);
+	/* PORT setting on PA2 */
+	ADC_EN_set_level(false);
+	ADC_EN_set_dir(PORT_DIR_IN);
+	ADC_EN_set_pull_mode(PORT_PULL_UP);
+	ADC_EN_set_isc(PORT_ISC_INPUT_DISABLE_gc);
 
 	/* PORT setting on PA4 */
+	BTN_set_level(false);
+	BTN_set_dir(PORT_DIR_IN);
+	BTN_set_pull_mode(PORT_PULL_OFF);
+	BTN_set_inverted(false);
+	BTN_set_isc(PORT_ISC_BOTHEDGES_gc);
 
-	// Set pin direction to output
-
-	LED1_EN_set_level(
-	    // <y> Initial level
-	    // <id> pad_initial_level
-	    // <false"> Low
-	    // <true"> High
-	    false);
-
+	/* PORT setting on PB5 */
+	LED1_EN_set_level(false);
 	LED1_EN_set_dir(PORT_DIR_OUT);
 
 	/* PORT setting on PA5 */
-
-	// Set pin direction to output
-
-	LED2_EN_set_level(
-	    // <y> Initial level
-	    // <id> pad_initial_level
-	    // <false"> Low
-	    // <true"> High
-	    false);
-
+	LED2_EN_set_level(false);
 	LED2_EN_set_dir(PORT_DIR_OUT);
 
 	/* PORT setting on PA6 */
-
-	// Set pin direction to output
-
-	LED3_EN_set_level(
-	    // <y> Initial level
-	    // <id> pad_initial_level
-	    // <false"> Low
-	    // <true"> High
-	    false);
-
+	LED3_EN_set_level(false);
 	LED3_EN_set_dir(PORT_DIR_OUT);
 
 	/* PORT setting on PA7 */
-
-	// Set pin direction to output
-
-	LED4_EN_set_level(
-	    // <y> Initial level
-	    // <id> pad_initial_level
-	    // <false"> Low
-	    // <true"> High
-	    false);
-
+	LED4_EN_set_level(false);
 	LED4_EN_set_dir(PORT_DIR_OUT);
 
-	/* PORT setting on PB0 */
-
-	// Set pin direction to output
-
-	R_EN_set_level(
-	    // <y> Initial level
-	    // <id> pad_initial_level
-	    // <false"> Low
-	    // <true"> High
-	    true);
-
-	R_EN_set_dir(PORT_DIR_OUT);
-
-	/* PORT setting on PB1 */
-
-	// Set pin direction to output
-
-	G_EN_set_level(
-	    // <y> Initial level
-	    // <id> pad_initial_level
-	    // <false"> Low
-	    // <true"> High
-	    true);
-
-	G_EN_set_dir(PORT_DIR_OUT);
-
-	/* PORT setting on PB2 */
-
-	// Set pin direction to output
-
-	B_EN_set_level(
-	    // <y> Initial level
-	    // <id> pad_initial_level
-	    // <false"> Low
-	    // <true"> High
-	    true);
-
-	B_EN_set_dir(PORT_DIR_OUT);
-
-	/* PORT setting on PB3 */
-
-	// Set pin direction to output
-
-	LED9_EN_set_level(
-	    // <y> Initial level
-	    // <id> pad_initial_level
-	    // <false"> Low
-	    // <true"> High
-	    false);
-
-	LED9_EN_set_dir(PORT_DIR_OUT);
-
-	/* PORT setting on PB4 */
-
-	PB4_set_level(
-	    // <y> Initial level
-	    // <id> pad_initial_level
-	    // <false"> Low
-	    // <true"> High
-	    false);
-
-	PB4_set_dir(
-	    // <y> Pin direction
-	    // <id> pad_dir
-	    // <PORT_DIR_OFF"> Off
-	    // <PORT_DIR_IN"> In
-	    // <PORT_DIR_OUT"> Out
-	    PORT_DIR_IN);
-
-	PB4_set_pull_mode(
-	    // <y> Pull configuration
-	    // <id> pad_pull_config
-	    // <PORT_PULL_OFF"> Off
-	    // <PORT_PULL_UP"> Pull-up
-	    PORT_PULL_UP);
-
-	PB4_set_inverted(
-	    // <y> Invert I/O on pin
-	    // <id> pad_invert
-	    // <false"> Not inverted
-	    // <true"> Inverted
-	    false);
-
-	PB4_set_isc(
-	    // <y> Pin Input/Sense Configuration
-	    // <id> pad_isc
-	    // <PORT_ISC_INTDISABLE_gc"> Interrupt disabled but input buffer enabled
-	    // <PORT_ISC_BOTHEDGES_gc"> Sense Both Edges
-	    // <PORT_ISC_RISING_gc"> Sense Rising Edge
-	    // <PORT_ISC_FALLING_gc"> Sense Falling Edge
-	    // <PORT_ISC_INPUT_DISABLE_gc"> Digital Input Buffer disabled
-	    // <PORT_ISC_LEVEL_gc"> Sense low Level
-	    PORT_ISC_INPUT_DISABLE_gc);
-
-	/* PORT setting on PB5 */
-
-	BTN_set_level(
-	    // <y> Initial level
-	    // <id> pad_initial_level
-	    // <false"> Low
-	    // <true"> High
-	    false);
-
-	BTN_set_dir(
-	    // <y> Pin direction
-	    // <id> pad_dir
-	    // <PORT_DIR_OFF"> Off
-	    // <PORT_DIR_IN"> In
-	    // <PORT_DIR_OUT"> Out
-	    PORT_DIR_IN);
-
-	BTN_set_pull_mode(
-	    // <y> Pull configuration
-	    // <id> pad_pull_config
-	    // <PORT_PULL_OFF"> Off
-	    // <PORT_PULL_UP"> Pull-up
-	    PORT_PULL_OFF);
-
-	BTN_set_inverted(
-	    // <y> Invert I/O on pin
-	    // <id> pad_invert
-	    // <false"> Not inverted
-	    // <true"> Inverted
-	    false);
-
-	BTN_set_isc(
-	    // <y> Pin Input/Sense Configuration
-	    // <id> pad_isc
-	    // <PORT_ISC_INTDISABLE_gc"> Interrupt disabled but input buffer enabled
-	    // <PORT_ISC_BOTHEDGES_gc"> Sense Both Edges
-	    // <PORT_ISC_RISING_gc"> Sense Rising Edge
-	    // <PORT_ISC_FALLING_gc"> Sense Falling Edge
-	    // <PORT_ISC_INPUT_DISABLE_gc"> Digital Input Buffer disabled
-	    // <PORT_ISC_LEVEL_gc"> Sense low Level
-	    PORT_ISC_INTDISABLE_gc);
-
 	/* PORT setting on PC0 */
-
-	// Set pin direction to output
-
-	LED5_EN_set_level(
-	    // <y> Initial level
-	    // <id> pad_initial_level
-	    // <false"> Low
-	    // <true"> High
-	    false);
-
+	LED5_EN_set_level(false);
 	LED5_EN_set_dir(PORT_DIR_OUT);
 
 	/* PORT setting on PC1 */
-
-	// Set pin direction to output
-
-	LED6_EN_set_level(
-	    // <y> Initial level
-	    // <id> pad_initial_level
-	    // <false"> Low
-	    // <true"> High
-	    false);
-
+	LED6_EN_set_level(false);
 	LED6_EN_set_dir(PORT_DIR_OUT);
 
 	/* PORT setting on PC2 */
-
-	// Set pin direction to output
-
-	LED7_EN_set_level(
-	    // <y> Initial level
-	    // <id> pad_initial_level
-	    // <false"> Low
-	    // <true"> High
-	    false);
-
+	LED7_EN_set_level(false);
 	LED7_EN_set_dir(PORT_DIR_OUT);
 
 	/* PORT setting on PC3 */
-
-	// Set pin direction to output
-
-	LED8_EN_set_level(
-	    // <y> Initial level
-	    // <id> pad_initial_level
-	    // <false"> Low
-	    // <true"> High
-	    false);
-
+	LED8_EN_set_level(false);
 	LED8_EN_set_dir(PORT_DIR_OUT);
+
+	/* PORT setting on PB3 */
+	LED9_EN_set_level(false);
+	LED9_EN_set_dir(PORT_DIR_OUT);
+
+	/* PORT setting on PB0 */
+	R_EN_set_level(true);
+	R_EN_set_dir(PORT_DIR_OUT);
+
+	/* PORT setting on PB1 */
+	G_EN_set_level(true);
+	G_EN_set_dir(PORT_DIR_OUT);
+
+	/* PORT setting on PB2 */
+	B_EN_set_level(true);
+	B_EN_set_dir(PORT_DIR_OUT);
 
 	CLKCTRL_init();
 

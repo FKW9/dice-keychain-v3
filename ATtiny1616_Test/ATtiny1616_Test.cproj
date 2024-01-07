@@ -53,13 +53,13 @@
         </TopLevelComponents>
         <AcmeActionInfos>
           <AcmeProjectActionInfo Action="File" Source="main.c" IsConfig="false" Hash="k0AH7j+BrmdFhBPzCCMptA" />
-          <AcmeProjectActionInfo Action="File" Source="src/driver_init.c" IsConfig="false" Hash="HERzr72EUanDFMoZkziWuw" />
+          <AcmeProjectActionInfo Action="File" Source="src/driver_init.c" IsConfig="false" Hash="746jXWqNCNbq2J//w7SVFQ" />
           <AcmeProjectActionInfo Action="File" Source="include/driver_init.h" IsConfig="false" Hash="SVkZ0rq7bvOq40n/y/HsZA" />
-          <AcmeProjectActionInfo Action="File" Source="include/atmel_start_pins.h" IsConfig="false" Hash="aHduufZa+9jTPv25myQLew" />
+          <AcmeProjectActionInfo Action="File" Source="include/atmel_start_pins.h" IsConfig="false" Hash="hsJ7ANF1szp2vb70izDJ1w" />
           <AcmeProjectActionInfo Action="File" Source="driver_isr.c" IsConfig="false" Hash="MvMMK2GhxVFkAQcdYQz48Q" />
           <AcmeProjectActionInfo Action="File" Source="examples/include/adc_basic_example.h" IsConfig="false" Hash="Qt7AVbkCs/SLXxsHtKTO2A" />
           <AcmeProjectActionInfo Action="File" Source="examples/src/adc_basic_example.c" IsConfig="false" Hash="yjDjgICqzd0fbz1tCwzS1A" />
-          <AcmeProjectActionInfo Action="File" Source="include/adc_basic.h" IsConfig="false" Hash="T3yTucTpkVgV410Toc64/g" />
+          <AcmeProjectActionInfo Action="File" Source="include/adc_basic.h" IsConfig="false" Hash="a0HLrEs82DNjDyHN1ySxog" />
           <AcmeProjectActionInfo Action="File" Source="include/bod.h" IsConfig="false" Hash="ZLQQMk2tvecp7+/rnFJ88w" />
           <AcmeProjectActionInfo Action="File" Source="include/ccp.h" IsConfig="false" Hash="5tZzJbuv1SnHXckp4Dkw+w" />
           <AcmeProjectActionInfo Action="File" Source="include/clkctrl.h" IsConfig="false" Hash="zM1JGmuFxSf4GSXRFGmwTg" />
@@ -72,7 +72,7 @@
           <AcmeProjectActionInfo Action="File" Source="include/tca.h" IsConfig="false" Hash="NgyhQKdVqInA83UA9a6g7g" />
           <AcmeProjectActionInfo Action="File" Source="include/tcb.h" IsConfig="false" Hash="iZjU/TDG/W/i+/qu9lwI5w" />
           <AcmeProjectActionInfo Action="File" Source="include/vref.h" IsConfig="false" Hash="tdp4+svz4gIrjkt6bxIHnQ" />
-          <AcmeProjectActionInfo Action="File" Source="src/adc_basic.c" IsConfig="false" Hash="zEbLJvyg0+PQ8MvLkAQY4w" />
+          <AcmeProjectActionInfo Action="File" Source="src/adc_basic.c" IsConfig="false" Hash="I0mFaq5qQNTULHHhlt9ewQ" />
           <AcmeProjectActionInfo Action="File" Source="src/bod.c" IsConfig="false" Hash="RcfdUegRSFfgBJb87SJpvA" />
           <AcmeProjectActionInfo Action="File" Source="src/clkctrl.c" IsConfig="false" Hash="nOtI8+yyMpJZOcntavRlYA" />
           <AcmeProjectActionInfo Action="File" Source="src/cpuint.c" IsConfig="false" Hash="L3e6Af5pnSS+o6YQ/UWcvw" />
@@ -246,6 +246,57 @@
     <Compile Include="Config\clock_config.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="src\vref.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="utils\assembler.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="utils\assembler\gas.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="utils\assembler\iar.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="utils\atomic.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="utils\compiler.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="utils\interrupt_avr8.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="utils\utils.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="utils\utils_assert.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <None Include="doxygen\adc.dox">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="doxygen\adc_basic.dox">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="doxygen\generator\doxyfile.doxygen">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="doxygen\generator\DoxygenLayout.xml">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="doxygen\mainpage.dox">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="doxygen\system.dox">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="doxygen\timer.dox">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="main_test.c">
+      <SubType>compile</SubType>
+    </None>
     <Compile Include="Config\RTE_Components.h">
       <SubType>compile</SubType>
     </Compile>
@@ -333,56 +384,6 @@
     <Compile Include="src\tcb.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="src\vref.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="utils\assembler.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="utils\assembler\gas.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="utils\assembler\iar.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="utils\atomic.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="utils\compiler.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="utils\interrupt_avr8.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="utils\utils.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="utils\utils_assert.h">
-      <SubType>compile</SubType>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="doxygen\adc.dox">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="doxygen\adc_basic.dox">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="doxygen\generator\doxyfile.doxygen">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="doxygen\generator\DoxygenLayout.xml">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="doxygen\mainpage.dox">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="doxygen\system.dox">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="doxygen\timer.dox">
-      <SubType>compile</SubType>
-    </None>
     <None Include="modules\adc\doc\adc.rst">
       <SubType>compile</SubType>
     </None>

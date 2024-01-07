@@ -59,8 +59,6 @@ adc_result_t ADC_0_get_conversion(adc_0_channel_t channel);
 
 uint8_t ADC_0_get_resolution();
 
-void ADC_0_register_callback(adc_irq_cb_t f);
-
 #ifdef __cplusplus
 }
 #endif
