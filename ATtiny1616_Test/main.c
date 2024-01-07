@@ -24,6 +24,7 @@ float read_cell_voltage(void);
 void adc_disable();
 void adc_enable();
 
+volatile float cell_voltage = 0;
 volatile uint8_t blink_flag, blink_count = 0;
 volatile uint8_t number = 1;
 volatile uint8_t delay_slowdown = DELAY_SLOWDOWN;
@@ -172,7 +173,7 @@ void goto_sleep(void){
 	TCA0.SINGLE.CTRLA &= ~(1 << TCA_SINGLE_ENABLE_bp);
 	leds_off();
 	reset_state();
-	
+		
 	if (++_executions >= EXECS_TILL_NEW_SEED)
 	{
 		BTN_set_isc(PORT_ISC_INPUT_DISABLE_gc);
@@ -294,6 +295,9 @@ float read_cell_voltage(void){
 }
 
 void start_init_after_sleep(void){
+	
+	cell_voltage = read_cell_voltage();
+	
 	/* PORT setting on PB5 */
 	LED1_EN_set_level(false);
 	LED1_EN_set_dir(PORT_DIR_OUT);
