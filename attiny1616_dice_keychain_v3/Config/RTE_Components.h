@@ -39,7 +39,7 @@
  *
  * \acme_license_stop
  *
- * Project: ATtiny1616_Test
+ * Project: attiny1616_dice_keychain_v3
  * Target:  ATtiny1616 
  *
  **/

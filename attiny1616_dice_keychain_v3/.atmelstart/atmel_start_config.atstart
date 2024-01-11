@@ -396,6 +396,13 @@ pads:
     configuration: null
 toolchain_options:
 - definition:
+    identifier: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::environment_definition::All:Atmel.Studio:7.0.0
+  configuration:
+    compiler_config:
+      avrgcc_compiler_miscellaneous_OtherFlags: -std=gnu99
+    linker_config:
+      avrgcc_linker_miscellaneous_LinkerFlags: ''
+- definition:
     identifier: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::environment_definition::All:Microchip.Studio.xc8:7.0.0
   configuration:
     compiler_config:
@@ -404,13 +411,6 @@ toolchain_options:
       xc8_linker_miscellaneous_LinkerFlags: ''
 - definition:
     identifier: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::environment_definition::All:Microchip.Studio.gcc:7.0.0
-  configuration:
-    compiler_config:
-      avrgcc_compiler_miscellaneous_OtherFlags: -std=gnu99
-    linker_config:
-      avrgcc_linker_miscellaneous_LinkerFlags: ''
-- definition:
-    identifier: Atmel:ATtiny417_81x_161x_321x_drivers:1.0.0::ATtiny1616-MNR::environment_definition::All:Atmel.Studio:7.0.0
   configuration:
     compiler_config:
       avrgcc_compiler_miscellaneous_OtherFlags: -std=gnu99
