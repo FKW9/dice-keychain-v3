@@ -5,13 +5,22 @@
 #include <driver_init.h>
 #include <compiler.h>
 #include <stdlib.h>
+#include <avr/eeprom.h>
 
-#define DELAY_SLOWDOWN 20		// 20
-#define DELAY_SHUFFLE 8			// 8
-#define BLINK_COUNT 3			// 3
-#define TIMEOUT_SHUFFLE 500		// 500 = ~5sec
+#define DELAY_SLOWDOWN		20	// 20
+#define DELAY_SHUFFLE		8	// 8
+#define BLINK_COUNT			3	// 3
+#define TIMEOUT_SHUFFLE		400	// 400 = ~4sec
 #define EXECS_TILL_NEW_SEED 10	// 5
+#define BTN_HOLD_TIME		40
+#define MENU_WAIT_TIME		300
+#define MENU_PRESSES_NEEDED 3
+#define MENU_TIMEOUT		50
+#define BAT_LEVEL_TIME      200
 
+#define EEPROM_ADDRESS		37
+
+void read_cell_voltage(void);
 void prepare_sleep(void);
 void goto_sleep(void);
 void reset_state(void);
@@ -19,83 +28,180 @@ void enable_rng_adc_channels(void);
 void disable_rng_adc_channels(void);
 void generate_new_seed(void);
 void start_init_after_sleep(void);
-float read_cell_voltage(void);
-void adc_disable();
-void adc_enable();
+void adc_disable(void);
+void adc_enable(void);
+void read_max_dice_number(void);
+void save_max_dice_number(void);
 
-volatile float cell_voltage = 0;
-volatile uint8_t blink_flag, blink_count = 0;
-volatile uint8_t number = 1;
-volatile uint8_t delay_slowdown = DELAY_SLOWDOWN;
-volatile uint8_t current_dice_state, previous_dice_state = 0;
-volatile uint16_t _seed, _executions = 0;
+volatile uint16_t	_executions			= 0;
+volatile uint16_t   _t_hold_key			= 0;
+volatile uint16_t   _t_menu_timeout		= 0;
+volatile uint16_t   adc_result			= 0;
+volatile uint8_t	blink_flag			= 0;
+volatile uint8_t	blink_count			= 0;
+volatile uint8_t	number				= 1;
+volatile uint8_t	delay_slowdown		= DELAY_SLOWDOWN;
+volatile uint8_t	current_dice_state	= 0;
+volatile uint8_t	previous_dice_state	= 0;
+volatile uint8_t	button_presses_menu	= 0;
+volatile uint8_t    exit_menu      		= 0;
+volatile uint8_t    display_bat_lvl		= 0;
+
 
 // 10ms interrupt
 ISR(TCA0_CMP0_vect)
 {
-	static uint16_t t_shuffle_number, t_slowdown_number, t_timeout = 0;
-	static uint8_t shuffle_number = 1;
-
-	///////////////////////////////////////////////////////////
-	if (current_dice_state == 1)
+	static uint16_t t_shuffle_number	= 0;
+	static uint16_t t_slowdown_number	= 0;
+	static uint16_t t_timeout			= 0;
+	static uint16_t t_blink_menu		= 0;
+	static uint16_t t_blink_menu_color	= 0;
+	static uint16_t t_display_voltage	= 0;
+	static uint16_t t_blink_voltage		= 0;
+	static uint8_t  shuffle_number		= 1;
+	
+	switch (current_dice_state)
 	{
-		t_slowdown_number = 0;
-
-		if (++t_shuffle_number >= DELAY_SHUFFLE){
-			t_shuffle_number = 0;
-			next_color();
-			set_dice_number(shuffle_number);
-			if (++shuffle_number > MAX_DICE_NUMBER){
-				shuffle_number = 1;
-			}
-
-		}
-
-		if (++t_timeout > TIMEOUT_SHUFFLE){
-			current_dice_state = 2;
-		}
-	}
-
-	///////////////////////////////////////////////////////////
-	else if (current_dice_state == 2)
-	{
-		t_timeout = 0;
-		t_shuffle_number = 0;
-
-		// set number once entering slowdown
-		if (t_slowdown_number == 0)
-		{
-			number = rand() % MAX_DICE_NUMBER + 1;
-		}
-
-		// when button is released, start slowing down then blink the resulting number
-		if (++t_slowdown_number >= delay_slowdown)
-		{
-			t_slowdown_number = 1;
-
-			if (delay_slowdown <= (50-DELAY_SLOWDOWN))
+		// CHECK IF BUTTON IS HELD LONG ENOUGH
+		// WHEN BUTTON IS HELD LONG ENOUGH, GO TO STATE 2 (START SHUFFLE)
+		case 1:
+			// wait if button is held long enough
+			if(BTN_get_level() == 1)
 			{
-				if (++number > MAX_DICE_NUMBER){
-					number = 1;
-				}
-				next_color();
-				set_dice_number(number);
-				delay_slowdown += 4;
-			}
-			else
-			{
-				if (++blink_count < (BLINK_COUNT * 2))
+				_t_hold_key++;
+				if(_t_hold_key >= BTN_HOLD_TIME)
 				{
-					blink_flag ^= 1;
+					_t_hold_key = 0;
+					current_dice_state = 2;
+					start_init_after_sleep();
+				}
+			}
+			else {
+				_t_hold_key = 0;
+			}
+		break;
+		
+		// START SHUFFLEING NUMBERS (not random)
+		case 2:
+			t_slowdown_number = 0;
+
+			if (++t_shuffle_number >= DELAY_SHUFFLE){
+				t_shuffle_number = 0;
+				next_color();
+				set_dice_number(shuffle_number);
+				if (++shuffle_number > get_max_dice_number()){
+					shuffle_number = 1;
+				}
+			}
+
+			if (++t_timeout > TIMEOUT_SHUFFLE){
+				display_bat_lvl = 1;
+				current_dice_state = 3;
+			}
+		break;
+		
+		// START SLOWING DOWN AND APPLY RANDOM NUMBER, THEN BLINK RESULT NUMBER
+		case 3:
+			t_timeout = 0;
+			t_shuffle_number = 0;
+
+			// set number once entering slowdown
+			if (t_slowdown_number == 0)
+			{
+				number = rand() % get_max_dice_number() + 1;
+			}
+
+			// when button is released, start slowing down then blink the resulting number
+			if (++t_slowdown_number >= delay_slowdown)
+			{
+				t_slowdown_number = 1;
+
+				if (delay_slowdown <= (50-DELAY_SLOWDOWN))
+				{
+					if (++number > get_max_dice_number()){
+						number = 1;
+					}
+					next_color();
+					set_dice_number(number);
+					delay_slowdown += 4;
 				}
 				else
 				{
-					if (BTN_get_level() == 0) {
-						goto_sleep();
+					button_presses_menu = 0;
+				
+					if (++blink_count < (BLINK_COUNT * 2))
+					{
+						blink_flag ^= 1;
+					}
+					else
+					{
+						if (display_bat_lvl == 1)
+						{
+							blink_flag = 0;
+							previous_dice_state = 3;
+							current_dice_state = 5;
+							set_mode(MODE_BAT_LVL);
+						}
+						// button low level check necessary?
+						else if (BTN_get_level() == 0 && display_bat_lvl == 0)
+						{
+							goto_sleep();
+						}
 					}
 				}
 			}
-		}
+		break;
+		
+		// CHECK IF USER WANTS TO GO TO THE MENU
+		case 4:
+			if(exit_menu == 0)
+			{
+				if(++t_blink_menu > 15) {
+					blink_flag ^= 1;
+					t_blink_menu = 0;
+				}
+				
+				if(++t_blink_menu_color > 5) {
+					next_color();
+					t_blink_menu_color = 0;
+				}
+				
+				if(++_t_menu_timeout >= MENU_WAIT_TIME)
+				{
+					_t_menu_timeout = 0;
+					exit_menu = 1;
+				}
+				} else {
+				blink_flag = 0;
+				set_dice_color('g');
+				if(++_t_menu_timeout >= MENU_TIMEOUT)
+				{
+					_t_menu_timeout = 0;
+					exit_menu = 0;
+					save_max_dice_number();
+					goto_sleep();
+					set_dice_color('r');
+				}
+			}
+		break;
+		
+		// DISPLAY CELL VOLTAGE LEVEL
+		case 5:
+			if (get_bat_lvl() % 2 == 1)
+			{
+				if(++t_blink_voltage > 25) {
+					toggle_bat_blink();
+					t_blink_voltage = 0;
+				}
+			}
+			
+			if (++t_display_voltage > BAT_LEVEL_TIME)
+			{
+				t_display_voltage = 0;
+				goto_sleep();
+			}
+		break;
+		
 	}
 
 	/* The interrupt flag has to be cleared manually */
@@ -105,8 +211,7 @@ ISR(TCA0_CMP0_vect)
 // 10us interrupt
 ISR(TCB0_INT_vect)
 {
-
-	if (current_dice_state == 1 || current_dice_state == 2)
+	if (current_dice_state == 2 || current_dice_state == 3 || current_dice_state == 4 || current_dice_state == 5)
 	{
 		if (blink_flag == 0)
 		{
@@ -129,21 +234,48 @@ ISR(PORTA_PORT_vect)
 	{
 		// after startup (or coming back from sleep)
 		previous_dice_state = current_dice_state;
-		current_dice_state = 1;
+		current_dice_state = 1; // wait if button is held long enough
+		TCA0.SINGLE.CTRLA |= (1 << TCA_SINGLE_ENABLE_bp);
 	}
 	else if (current_dice_state == 1 && previous_dice_state == 0)
 	{
+		// when releasing button before min hold time is reached
+		previous_dice_state = current_dice_state;
+		current_dice_state = 4;
+	}
+	else if (current_dice_state == 2 && previous_dice_state == 0)
+	{
 		// when releasing button
 		previous_dice_state = current_dice_state;
-		current_dice_state = 2;
+		current_dice_state = 3;
 	}
-	else if (current_dice_state == 2 && previous_dice_state == 1)
+	else if (current_dice_state == 3 && previous_dice_state == 2)
 	{
 		// pressing button before entering sleep mode (= reroll)
 		reset_state();
-		current_dice_state = 1;
+		current_dice_state = 2;
+		if(++button_presses_menu >= MENU_PRESSES_NEEDED){
+			previous_dice_state = 3;
+			current_dice_state = 4;
+			button_presses_menu = 0;
+			set_dice_number(get_max_dice_number());
+		}
 	}
-	else {
+	else if (current_dice_state == 4 && previous_dice_state == 3)
+	{
+		if(BTN_get_level() == 1 && exit_menu == 0){
+			_t_menu_timeout = 0; // reset timeout
+			uint8_t nr = get_max_dice_number();
+			if(++nr > 9){
+				nr = 2;
+			}
+			set_dice_number(nr);
+			set_max_dice_number(nr);
+		}
+	}
+	// prevent from going to sleep while number is blinking (happens after timeout when button is released)
+	else if (current_dice_state != 3)
+	{
 		goto_sleep();
 	}
 
@@ -154,11 +286,15 @@ ISR(PORTA_PORT_vect)
 int main(void)
 {
 	atmel_start_init();
+	read_max_dice_number();
 	goto_sleep();
-	while (1) {}
+	while (1){}
 }
 
 void reset_state(void){
+	set_mode(MODE_DICE);
+	set_bat_blink(0);
+	_t_hold_key = 0;
 	current_dice_state = 0;
 	previous_dice_state = 0;
 	blink_flag = 0;
@@ -167,6 +303,13 @@ void reset_state(void){
 }
 
 void goto_sleep(void){
+	
+	button_presses_menu = 0;
+	display_bat_lvl = 0;
+
+	// unload RC network from button
+	BTN_set_dir(PORT_DIR_OUT);
+	BTN_set_level(false);
 
 	TCB0.CTRLA &= ~(1 << TCB_ENABLE_bp);
 	TCA0.SINGLE.CTRLA &= ~(1 << TCA_SINGLE_ENABLE_bp);
@@ -190,7 +333,7 @@ void goto_sleep(void){
 	PORTC.OUT = 0;
 	PORTC.DIR = 0;
 	for (uint8_t i = 0; i < 8; i++) {
- 		*((uint8_t *)&PORTA + 0x10 + i) = 0b00001100;
+		*((uint8_t *)&PORTA + 0x10 + i) = 0b00001100;
 		*((uint8_t *)&PORTB + 0x10 + i) = 0b00001100;
 		*((uint8_t *)&PORTC + 0x10 + i) = 0b00001100;
 	}
@@ -199,13 +342,12 @@ void goto_sleep(void){
 	BTN_set_isc(PORT_ISC_BOTHEDGES_gc);
 
 	sleep_cpu();
-	atmel_start_init();
 }
 
 void generate_new_seed(void){
 	adc_enable();
 	enable_rng_adc_channels();
-	_seed = number;
+	uint16_t _seed = adc_result - number;
 	for (uint8_t i = 0; i<5; i++)
 	{
 		_seed ^= (((ADC_0_get_conversion(9) & 0x07) << 3) + (ADC_0_get_conversion(3) & 0x07));
@@ -217,16 +359,38 @@ void generate_new_seed(void){
 	srand(_seed);
 }
 
-float read_cell_voltage(void){
+void read_cell_voltage(void){
 	adc_enable();
 
 	ADC_EN_set_level(false);
 	ADC_EN_set_dir(PORT_DIR_OUT);
 
 	// After the conversion is complete (RESRDY is '1'), the conversion result RES is available in the ADC Result Register (ADCn.RES). The result for a 10-bit conversion is given as:
-	// RES = (1023 x VIN) / VREF, VREF = 2.5V
+	// RES = (1023 x VIN) / VREF, VREF = 1.5V
 	// Multiply by 2 because of 50/50 voltage divider
-	float voltage = (ADC_0_get_conversion(1)* 2.5 / 1023) * 2;
+	
+	adc_result = ADC_0_get_conversion(1);
+	
+	// see excel sheet for calculations
+	if(adc_result > 1020) {
+		set_bat_lvl(6);
+	} else if (adc_result > 955){
+		set_bat_lvl(5);
+	} else if (adc_result > 921) {
+		set_bat_lvl(4);
+	} else if (adc_result > 887) {
+		set_bat_lvl(3);
+	} else if (adc_result > 818) {
+		set_bat_lvl(2);
+	} else {
+		set_bat_lvl(1);
+	}
+	
+	if(get_bat_lvl() < 3) {
+		set_bat_color('r');
+	} else {
+		set_bat_color('g');
+	}
 
 	ADC_EN_set_level(false);
 	ADC_EN_set_dir(PORT_DIR_IN);
@@ -234,13 +398,23 @@ float read_cell_voltage(void){
 	ADC_EN_set_isc(PORT_ISC_INPUT_DISABLE_gc);
 
 	adc_disable();
+}
 
-	return voltage;
+void read_max_dice_number()
+{
+	uint8_t nr = eeprom_read_byte((uint8_t *)EEPROM_ADDRESS);
+	if(nr >= 1 && nr <= 9)
+	set_max_dice_number(nr);
+}
+
+void save_max_dice_number()
+{
+	eeprom_update_byte((uint8_t *)EEPROM_ADDRESS, get_max_dice_number());
 }
 
 void start_init_after_sleep(void){
 
-	cell_voltage = read_cell_voltage();
+	read_cell_voltage();
 
 	/* PORT setting on PB5 */
 	LED1_EN_set_level(false);
@@ -290,7 +464,6 @@ void start_init_after_sleep(void){
 	B_EN_set_level(true);
 	B_EN_set_dir(PORT_DIR_OUT);
 
-	TCA0.SINGLE.CTRLA |= (1 << TCA_SINGLE_ENABLE_bp);
 	TCB0.CTRLA |= (1 << TCB_ENABLE_bp);
 }
 

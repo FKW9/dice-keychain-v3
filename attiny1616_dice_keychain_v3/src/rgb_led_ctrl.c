@@ -6,10 +6,15 @@
  */ 
 #include <rgb_led_ctrl.h>
 
+static uint8_t mode = MODE_DICE;
+static uint8_t max_dice_number = 9;
 static uint8_t dice_number = 1;
 static char dice_color = 'r';
 
-#if MAX_DICE_NUMBER == 9
+static uint8_t bat_lvl = 1;
+static uint8_t bat_blink = 0;
+static char bat_color = 'g';
+
 static uint8_t dice_matrix[9][9] = { // [NUMBER][LED_INDEX]
 	{5, 0, 0, 0, 0, 0, 0, 0, 0},
 	{1, 9, 0, 0, 0, 0, 0, 0, 0},
@@ -21,39 +26,59 @@ static uint8_t dice_matrix[9][9] = { // [NUMBER][LED_INDEX]
 	{1, 2, 3, 4, 6, 7, 8, 9, 0},
 	{1, 2, 3, 4, 5, 6, 7, 8, 9}
 };
-#elif MAX_DICE_NUMBER == 8
-static uint8_t dice_matrix[8][8] = { // [NUMBER][LED_INDEX]
-	{5, 0, 0, 0, 0, 0, 0, 0},
-	{1, 9, 0, 0, 0, 0, 0, 0},
-	{3, 5, 7, 0, 0, 0, 0, 0},
-	{1, 3, 7, 9, 0, 0, 0, 0},
-	{1, 3, 5, 7, 9, 0, 0, 0},
-	{1, 3, 4, 6, 7, 9, 0, 0},
-	{1, 3, 4, 6, 7, 9, 5, 0},
-	{1, 2, 3, 4, 6, 7, 8, 9}
+
+static uint8_t bat_lvl_matrix[7][9] = { // [NUMBER][LED_INDEX]
+	{0, 0, 0, 0, 0, 0, 0, 0, 0},
+	{7, 8, 9, 0, 0, 0, 0, 0, 0},
+	{7, 8, 9, 0, 0, 0, 0, 0, 0},
+	{4, 5, 6, 7, 8, 9, 0, 0, 0},
+	{4, 5, 6, 7, 8, 9, 0, 0, 0},
+	{1, 2, 3, 4, 5, 6, 7, 8, 9},
+	{1, 2, 3, 4, 5, 6, 7, 8, 9}
 };
-#elif MAX_DICE_NUMBER == 7
-static uint8_t dice_matrix[7][7] = { // [NUMBER][LED_INDEX]
-	{5, 0, 0, 0, 0, 0, 0},
-	{1, 9, 0, 0, 0, 0, 0},
-	{3, 5, 7, 0, 0, 0, 0},
-	{1, 3, 7, 9, 0, 0, 0},
-	{1, 3, 5, 7, 9, 0, 0},
-	{1, 3, 4, 6, 7, 9, 0},
-	{1, 3, 4, 6, 7, 9, 5}
-};
-#elif MAX_DICE_NUMBER == 6
-static uint8_t dice_matrix[6][6] = { // [NUMBER][LED_INDEX]
-	{5, 0, 0, 0, 0, 0},
-	{1, 9, 0, 0, 0, 0},
-	{3, 5, 7, 0, 0, 0},
-	{1, 3, 7, 9, 0, 0},
-	{1, 3, 5, 7, 9, 0},
-	{1, 3, 4, 6, 7, 9}
-};
-#else
-#error Unsupported MAX_DICE_NUMBER
-#endif
+
+void toggle_bat_blink(void)
+{
+	bat_blink ^= 1;
+}
+
+void set_bat_blink(uint8_t b)
+{
+	bat_blink = b;
+}
+
+void set_bat_lvl(uint8_t lvl)
+{
+	bat_lvl = lvl;
+}
+
+uint8_t get_bat_lvl(void)
+{
+	return bat_lvl;
+}
+
+void set_bat_color(char rgb)
+{
+	bat_color= rgb;
+}
+
+uint8_t get_mode(void)
+{
+	return mode;
+}
+
+void set_mode(uint8_t _mode)
+{
+	mode = _mode;
+}
+
+void set_max_dice_number(uint8_t number){
+	max_dice_number = number;
+}
+
+uint8_t get_max_dice_number(void){
+	return max_dice_number;
+}
 
 uint8_t get_dice_number(void){
 	return dice_number;
@@ -74,9 +99,24 @@ void set_dice_color(char color){
 void dice_timer_routine(void){
 	static uint8_t index = 0;
 	
-	set_single_rgb_led(dice_matrix[dice_number - 1][index], dice_color);
-	if (++index > (MAX_DICE_NUMBER - 1))
-		index = 0;
+	switch(mode){
+		case MODE_DICE:
+			set_single_rgb_led(dice_matrix[dice_number - 1][index], dice_color);
+			if (++index > (max_dice_number - 1))
+			index = 0;
+			break;
+			
+		case MODE_BAT_LVL:
+			set_single_rgb_led(bat_lvl_matrix[bat_lvl - bat_blink][index], bat_color);
+			if (++index > 8)
+			index = 0;
+			break;
+			
+		case MODE_CUSTOM:
+			break;
+			
+	}
+
 }
 
 void clear_all_led_pins(void){
@@ -90,16 +130,22 @@ void leds_off(void){
 }
 
 void next_color(void){
-	switch(dice_color){
-		case 'r':
-		set_dice_color('g');
-		break;
-		case 'g':
-		set_dice_color('b');
-		break;
-		case 'b':
-		set_dice_color('r');
-		break;
+	
+	if (bat_lvl < 3)
+	{
+		dice_color = 'r';
+	} else {
+		switch(dice_color){
+			case 'r':
+			dice_color = 'g';
+			break;
+			case 'g':
+			dice_color = 'b';
+			break;
+			case 'b':
+			dice_color = 'r';
+			break;
+		}
 	}
 }
 
