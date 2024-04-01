@@ -10,13 +10,13 @@
 #define DELAY_SLOWDOWN		20	// 20
 #define DELAY_SHUFFLE		8	// 8
 #define BLINK_COUNT			3	// 3
-#define TIMEOUT_SHUFFLE		400	// 400 = ~4sec
+#define TIMEOUT_SHUFFLE		350	// 400 = ~4sec
 #define EXECS_TILL_NEW_SEED 10	// 5
-#define BTN_HOLD_TIME		40
+#define BTN_MIN_HOLD_TIME	40
 #define MENU_WAIT_TIME		300
 #define MENU_PRESSES_NEEDED 3
 #define MENU_TIMEOUT		50
-#define BAT_LEVEL_TIME      200
+#define BAT_LEVEL_TIME      160
 
 #define EEPROM_ADDRESS		37
 
@@ -69,7 +69,7 @@ ISR(TCA0_CMP0_vect)
 			if(BTN_get_level() == 1)
 			{
 				_t_hold_key++;
-				if(_t_hold_key >= BTN_HOLD_TIME)
+				if(_t_hold_key >= BTN_MIN_HOLD_TIME)
 				{
 					_t_hold_key = 0;
 					current_dice_state = 2;
