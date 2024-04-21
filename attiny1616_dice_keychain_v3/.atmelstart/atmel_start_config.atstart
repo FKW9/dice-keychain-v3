@@ -26,17 +26,17 @@ drivers:
     functionality: System
     api: Drivers:CLKCTRL:Init
     configuration:
-      $input: 625000
-      $input_id: Main Clock (CLK_MAIN)
-      RESERVED_InputFreq: 625000
-      RESERVED_InputFreq_id: Main Clock (CLK_MAIN)
+      $input: 20000000
+      $input_id: 20MHz Internal Oscillator (OSC20M)
+      RESERVED_InputFreq: 20000000
+      RESERVED_InputFreq_id: 20MHz Internal Oscillator (OSC20M)
       _$freq_output_32KHz divided by 32: 1024
       _$freq_output_External Clock (EXTCLK): 32768
-      _$freq_output_Main Clock (CLK_MAIN): 625000
-      _$freq_output_TCD0 Clock (CLK_TCD0): 625000
+      _$freq_output_Main Clock (CLK_MAIN): 833333.3333333334
+      _$freq_output_TCD0 Clock (CLK_TCD0): 833333.3333333334
       clkctrl_mclkctrla_cksel: 20MHz Internal Oscillator (OSC20M)
       clkctrl_mclkctrla_clkout: false
-      clkctrl_mclkctrlb_pdiv: '32'
+      clkctrl_mclkctrlb_pdiv: '24'
       clkctrl_mclkctrlb_pen: true
       clkctrl_mclklock_locken: false
       clkctrl_osc16mctrla_runstdby: false

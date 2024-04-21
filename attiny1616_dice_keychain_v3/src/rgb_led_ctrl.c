@@ -7,7 +7,7 @@
 #include <rgb_led_ctrl.h>
 
 static uint8_t mode = MODE_DICE;
-static uint8_t max_dice_number = 9;
+static uint8_t max_dice_number = 6;
 static uint8_t dice_number = 1;
 static char dice_color = 'r';
 

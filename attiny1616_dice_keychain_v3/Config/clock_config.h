@@ -5,7 +5,7 @@
 // <<< Use Configuration Wizard in Context Menu >>>
 
 #ifndef F_CPU
-#define F_CPU 625000
+#define F_CPU 833333
 #endif
 
 // <<< end of configuration section >>>

@@ -74,7 +74,7 @@
           <AcmeProjectActionInfo Action="File" Source="include/vref.h" IsConfig="false" Hash="tdp4+svz4gIrjkt6bxIHnQ" />
           <AcmeProjectActionInfo Action="File" Source="src/adc_basic.c" IsConfig="false" Hash="I0mFaq5qQNTULHHhlt9ewQ" />
           <AcmeProjectActionInfo Action="File" Source="src/bod.c" IsConfig="false" Hash="RcfdUegRSFfgBJb87SJpvA" />
-          <AcmeProjectActionInfo Action="File" Source="src/clkctrl.c" IsConfig="false" Hash="nOtI8+yyMpJZOcntavRlYA" />
+          <AcmeProjectActionInfo Action="File" Source="src/clkctrl.c" IsConfig="false" Hash="pUXbX0dbFfc2kNppKcTB/A" />
           <AcmeProjectActionInfo Action="File" Source="src/cpuint.c" IsConfig="false" Hash="L3e6Af5pnSS+o6YQ/UWcvw" />
           <AcmeProjectActionInfo Action="File" Source="src/protected_io.S" IsConfig="false" Hash="sgFkmFP7h1y8L07bVZahaQ" />
           <AcmeProjectActionInfo Action="File" Source="src/slpctrl.c" IsConfig="false" Hash="Qk3Auoz+XMxyknrWltfyAg" />
@@ -91,7 +91,7 @@
           <AcmeProjectActionInfo Action="File" Source="utils/utils_assert.h" IsConfig="false" Hash="lJZG/QWOeOnUhe4wcXVztA" />
           <AcmeProjectActionInfo Action="File" Source="atmel_start.h" IsConfig="false" Hash="ZPe6iT3s4OihW8t8wDF53g" />
           <AcmeProjectActionInfo Action="File" Source="atmel_start.c" IsConfig="false" Hash="1RHIE7zTtYK4DURNPUqF9w" />
-          <AcmeProjectActionInfo Action="File" Source="config/clock_config.h" IsConfig="true" Hash="ATZnI71zZM1NZHrmrrpT+w" />
+          <AcmeProjectActionInfo Action="File" Source="config/clock_config.h" IsConfig="true" Hash="HOCBX+NAikZ4h2lUV8zT1g" />
         </AcmeActionInfos>
         <NonsecureFilesInfo />
       </AcmeProjectConfig>
@@ -113,7 +113,7 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <ToolchainSettings>
       <AvrGcc>
-  <avrgcc.common.Device>-mmcu=attiny1616 -B "%24(PackRepoDir)\Atmel\ATtiny_DFP\1.9.337\gcc\dev\attiny1616"</avrgcc.common.Device>
+  <avrgcc.common.Device>-mmcu=attiny1616 -B "%24(PackRepoDir)\atmel\ATtiny_DFP\1.9.337\gcc\dev\attiny1616"</avrgcc.common.Device>
   <avrgcc.common.outputfiles.hex>True</avrgcc.common.outputfiles.hex>
   <avrgcc.common.outputfiles.lss>True</avrgcc.common.outputfiles.lss>
   <avrgcc.common.outputfiles.eep>True</avrgcc.common.outputfiles.eep>
@@ -135,7 +135,6 @@
       <Value>%24(PackRepoDir)\atmel\ATtiny_DFP\1.9.337\include\</Value>
       <Value>../examples/include</Value>
       <Value>../Config</Value>
-      <Value>%24(PackRepoDir)\Atmel\ATtiny_DFP\1.9.337\include\</Value>
     </ListValues>
   </avrgcc.compiler.directories.IncludePaths>
   <avrgcc.compiler.optimization.level>Optimize for size (-Os)</avrgcc.compiler.optimization.level>
@@ -156,7 +155,6 @@
       <Value>../utils</Value>
       <Value>../utils/assembler</Value>
       <Value>../</Value>
-      <Value>%24(PackRepoDir)\Atmel\ATtiny_DFP\1.9.337\include\</Value>
     </ListValues>
   </avrgcc.assembler.general.IncludePaths>
 </AvrGcc>
@@ -165,7 +163,7 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <ToolchainSettings>
       <AvrGcc>
-  <avrgcc.common.Device>-mmcu=attiny1616 -B "%24(PackRepoDir)\Atmel\ATtiny_DFP\1.9.337\gcc\dev\attiny1616"</avrgcc.common.Device>
+  <avrgcc.common.Device>-mmcu=attiny1616 -B "%24(PackRepoDir)\atmel\ATtiny_DFP\1.9.337\gcc\dev\attiny1616"</avrgcc.common.Device>
   <avrgcc.common.outputfiles.hex>True</avrgcc.common.outputfiles.hex>
   <avrgcc.common.outputfiles.lss>True</avrgcc.common.outputfiles.lss>
   <avrgcc.common.outputfiles.eep>True</avrgcc.common.outputfiles.eep>
@@ -187,7 +185,6 @@
       <Value>%24(PackRepoDir)\atmel\ATtiny_DFP\1.9.337\include\</Value>
       <Value>../examples/include</Value>
       <Value>../Config</Value>
-      <Value>%24(PackRepoDir)\Atmel\ATtiny_DFP\1.9.337\include\</Value>
     </ListValues>
   </avrgcc.compiler.directories.IncludePaths>
   <avrgcc.compiler.optimization.level>Optimize debugging experience (-Og)</avrgcc.compiler.optimization.level>
@@ -209,7 +206,6 @@
       <Value>../utils</Value>
       <Value>../utils/assembler</Value>
       <Value>../</Value>
-      <Value>%24(PackRepoDir)\Atmel\ATtiny_DFP\1.9.337\include\</Value>
     </ListValues>
   </avrgcc.assembler.general.IncludePaths>
   <avrgcc.assembler.debugging.DebugLevel>Default (-Wa,-g)</avrgcc.assembler.debugging.DebugLevel>
@@ -250,7 +246,85 @@
     <Compile Include="Config\clock_config.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="driver_isr.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\adc_basic.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\atmel_start_pins.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\bod.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\ccp.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\clkctrl.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\cpuint.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\driver_init.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\port.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\protected_io.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\rstctrl.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\slpctrl.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\system.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\tca.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\tcb.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\vref.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\adc_basic.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\bod.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\clkctrl.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\cpuint.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\protected_io.S">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\slpctrl.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\tca.c">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\vref.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <None Include="main_test.c">
+      <SubType>compile</SubType>
+    </None>
+    <Compile Include="Config\RTE_Components.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\rgb_led_ctrl.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="utils\assembler.h">
@@ -298,91 +372,13 @@
     <None Include="doxygen\timer.dox">
       <SubType>compile</SubType>
     </None>
-    <None Include="main_test.c">
-      <SubType>compile</SubType>
-    </None>
-    <Compile Include="Config\RTE_Components.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="driver_isr.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="include\adc_basic.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="include\atmel_start_pins.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="include\bod.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="include\ccp.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="include\clkctrl.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="include\cpuint.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="include\driver_init.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="include\port.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="include\protected_io.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="include\rgb_led_ctrl.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="include\rstctrl.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="include\slpctrl.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="include\system.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="include\tca.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="include\tcb.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="include\vref.h">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="main.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="src\adc_basic.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="src\bod.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="src\clkctrl.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="src\cpuint.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\driver_init.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="src\protected_io.S">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="src\rgb_led_ctrl.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="src\slpctrl.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="src\tca.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\tcb.c">

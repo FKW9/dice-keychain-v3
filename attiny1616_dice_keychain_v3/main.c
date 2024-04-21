@@ -7,17 +7,37 @@
 #include <stdlib.h>
 #include <avr/eeprom.h>
 
-#define DELAY_SLOWDOWN		20	// 20
-#define DELAY_SHUFFLE		8	// 8
-#define BLINK_COUNT			3	// 3
-#define TIMEOUT_SHUFFLE		350	// 400 = ~4sec
-#define EXECS_TILL_NEW_SEED 10	// 5
-#define BTN_MIN_HOLD_TIME	40
-#define MENU_WAIT_TIME		300
-#define MENU_PRESSES_NEEDED 3
-#define MENU_TIMEOUT		50
-#define BAT_LEVEL_TIME      160
+#if F_CPU == 625000
+	#define DELAY_SLOWDOWN		20	// 20
+	#define DELAY_SLOWDOWN_A    50
+	#define DELAY_SLOWDOWN_B    4
+	#define DELAY_SHUFFLE		8	// 8
+	#define TIMEOUT_SHUFFLE		350	// 400 = ~4sec
+	#define BTN_MIN_HOLD_TIME	30
+	#define MENU_WAIT_TIME		300
+	#define MENU_TIMEOUT		50
+	#define BAT_LEVEL_TIME      160
+	#define DELAY_BAT_BLINK     25
+	#define DELAY_MENU_BLINK    15
+	#define DELAY_MENU_BLINK_NEXT_COLOR 5
+#elif F_CPU == 833333
+	#define DELAY_SLOWDOWN		27
+	#define DELAY_SLOWDOWN_A    67
+	#define DELAY_SLOWDOWN_B    5
+	#define DELAY_SHUFFLE		11
+	#define TIMEOUT_SHUFFLE		470
+	#define BTN_MIN_HOLD_TIME	40
+	#define MENU_WAIT_TIME		400
+	#define MENU_TIMEOUT		67
+	#define BAT_LEVEL_TIME      213
+	#define DELAY_BAT_BLINK     33
+	#define DELAY_MENU_BLINK    20
+	#define DELAY_MENU_BLINK_NEXT_COLOR 7
+#endif
 
+#define MENU_PRESSES_NEEDED 3
+#define EXECS_TILL_NEW_SEED 10	// 5
+#define BLINK_COUNT			3	// 3
 #define EEPROM_ADDRESS		37
 
 void read_cell_voltage(void);
@@ -116,14 +136,14 @@ ISR(TCA0_CMP0_vect)
 			{
 				t_slowdown_number = 1;
 
-				if (delay_slowdown <= (50-DELAY_SLOWDOWN))
+				if (delay_slowdown <= (DELAY_SLOWDOWN_A-DELAY_SLOWDOWN))
 				{
 					if (++number > get_max_dice_number()){
 						number = 1;
 					}
 					next_color();
 					set_dice_number(number);
-					delay_slowdown += 4;
+					delay_slowdown += DELAY_SLOWDOWN_B;
 				}
 				else
 				{
@@ -135,6 +155,7 @@ ISR(TCA0_CMP0_vect)
 					}
 					else
 					{
+						blink_flag = 1;
 						if (display_bat_lvl == 1)
 						{
 							blink_flag = 0;
@@ -156,12 +177,12 @@ ISR(TCA0_CMP0_vect)
 		case 4:
 			if(exit_menu == 0)
 			{
-				if(++t_blink_menu > 15) {
+				if(++t_blink_menu > DELAY_MENU_BLINK) {
 					blink_flag ^= 1;
 					t_blink_menu = 0;
 				}
 				
-				if(++t_blink_menu_color > 5) {
+				if(++t_blink_menu_color > DELAY_MENU_BLINK_NEXT_COLOR) {
 					next_color();
 					t_blink_menu_color = 0;
 				}
@@ -189,7 +210,7 @@ ISR(TCA0_CMP0_vect)
 		case 5:
 			if (get_bat_lvl() % 2 == 1)
 			{
-				if(++t_blink_voltage > 25) {
+				if(++t_blink_voltage > DELAY_BAT_BLINK) {
 					toggle_bat_blink();
 					t_blink_voltage = 0;
 				}
@@ -304,6 +325,7 @@ void reset_state(void){
 
 void goto_sleep(void){
 	
+	blink_flag = 1;
 	button_presses_menu = 0;
 	display_bat_lvl = 0;
 
@@ -347,13 +369,13 @@ void goto_sleep(void){
 void generate_new_seed(void){
 	adc_enable();
 	enable_rng_adc_channels();
-	uint16_t _seed = adc_result - number;
+	uint16_t _seed = adc_result;
 	for (uint8_t i = 0; i<5; i++)
 	{
 		_seed ^= (((ADC_0_get_conversion(9) & 0x07) << 3) + (ADC_0_get_conversion(3) & 0x07));
-		_seed = (_seed << 6) + ((ADC_0_get_conversion(3) & 0x07) << 3) + ((ADC_0_get_conversion(9) & 0x07));
-		_seed ^= TCA0.SINGLE.CNT;
+		// _seed = (_seed << 6) + ((ADC_0_get_conversion(3) & 0x07) << 3) + ((ADC_0_get_conversion(9) & 0x07));
 	}
+	_seed ^= TCA0.SINGLE.CNT;
 	disable_rng_adc_channels();
 	adc_disable();
 	srand(_seed);
@@ -369,7 +391,15 @@ void read_cell_voltage(void){
 	// RES = (1023 x VIN) / VREF, VREF = 1.5V
 	// Multiply by 2 because of 50/50 voltage divider
 	
+	// throw away first conversion
 	adc_result = ADC_0_get_conversion(1);
+	adc_result = 0;
+	
+	for (uint8_t i = 0; i<5; i++)
+	{
+		adc_result += ADC_0_get_conversion(1);
+	}
+	adc_result /= 5;
 	
 	// see excel sheet for calculations
 	if(adc_result > 1020) {
