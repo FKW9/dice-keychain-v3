@@ -369,13 +369,13 @@ void goto_sleep(void){
 void generate_new_seed(void){
 	adc_enable();
 	enable_rng_adc_channels();
-	uint16_t _seed = adc_result;
+	uint16_t _seed = adc_result - number;
 	for (uint8_t i = 0; i<5; i++)
 	{
 		_seed ^= (((ADC_0_get_conversion(9) & 0x07) << 3) + (ADC_0_get_conversion(3) & 0x07));
-		// _seed = (_seed << 6) + ((ADC_0_get_conversion(3) & 0x07) << 3) + ((ADC_0_get_conversion(9) & 0x07));
+		_seed = (_seed << 6) + ((ADC_0_get_conversion(3) & 0x07) << 3) + ((ADC_0_get_conversion(9) & 0x07));
+		_seed ^= TCA0.SINGLE.CNT;
 	}
-	_seed ^= TCA0.SINGLE.CNT;
 	disable_rng_adc_channels();
 	adc_disable();
 	srand(_seed);
