@@ -4,8 +4,8 @@
 #include <adc_basic.h>
 #include <driver_init.h>
 #include <compiler.h>
-#include <stdlib.h>
 #include <avr/eeprom.h>
+#include <lfsr_random.h>
 
 #if F_CPU == 625000
 	#define DELAY_SLOWDOWN		20	// 20
@@ -36,9 +36,10 @@
 #endif
 
 #define MENU_PRESSES_NEEDED 3
-#define EXECS_TILL_NEW_SEED 10	// 5
+#define EXECS_TILL_NEW_SEED 16	// 5
 #define BLINK_COUNT			3	// 3
 #define EEPROM_ADDRESS		37
+// #define MENU_ENABLE
 
 void read_cell_voltage(void);
 void prepare_sleep(void);
@@ -64,9 +65,9 @@ volatile uint8_t	delay_slowdown		= DELAY_SLOWDOWN;
 volatile uint8_t	current_dice_state	= 0;
 volatile uint8_t	previous_dice_state	= 0;
 volatile uint8_t	button_presses_menu	= 0;
+volatile uint8_t	button_last_state   = 0;
 volatile uint8_t    exit_menu      		= 0;
 volatile uint8_t    display_bat_lvl		= 0;
-
 
 // 10ms interrupt
 ISR(TCA0_CMP0_vect)
@@ -128,7 +129,7 @@ ISR(TCA0_CMP0_vect)
 			// set number once entering slowdown
 			if (t_slowdown_number == 0)
 			{
-				number = rand() % get_max_dice_number() + 1;
+				number = lfsr_random() % get_max_dice_number() + 1;
 			}
 
 			// when button is released, start slowing down then blink the resulting number
@@ -253,10 +254,14 @@ ISR(PORTA_PORT_vect)
 	// be sure to wake up on rising edge, else go to sleep again
 	if (current_dice_state == 0 && previous_dice_state == 0 && BTN_get_level() == 1)
 	{
-		// after startup (or coming back from sleep)
-		previous_dice_state = current_dice_state;
-		current_dice_state = 1; // wait if button is held long enough
-		TCA0.SINGLE.CTRLA |= (1 << TCA_SINGLE_ENABLE_bp);
+		if(button_last_state == 1){
+			goto_sleep();
+		} else {
+			// after startup (or coming back from sleep)
+			previous_dice_state = current_dice_state;
+			current_dice_state = 1; // wait if button is held long enough
+			TCA0.SINGLE.CTRLA |= (1 << TCA_SINGLE_ENABLE_bp);
+		}
 	}
 	else if (current_dice_state == 1 && previous_dice_state == 0)
 	{
@@ -275,15 +280,18 @@ ISR(PORTA_PORT_vect)
 		// pressing button before entering sleep mode (= reroll)
 		reset_state();
 		current_dice_state = 2;
-		if(++button_presses_menu >= MENU_PRESSES_NEEDED){
-			previous_dice_state = 3;
-			current_dice_state = 4;
-			button_presses_menu = 0;
-			set_dice_number(get_max_dice_number());
-		}
+		#ifdef MENU_ENABLE
+			if(++button_presses_menu >= MENU_PRESSES_NEEDED){
+				previous_dice_state = 3;
+				current_dice_state = 4;
+				button_presses_menu = 0;
+				set_dice_number(get_max_dice_number());
+			}
+		#endif
 	}
 	else if (current_dice_state == 4 && previous_dice_state == 3)
 	{
+		#ifdef MENU_ENABLE
 		if(BTN_get_level() == 1 && exit_menu == 0){
 			_t_menu_timeout = 0; // reset timeout
 			uint8_t nr = get_max_dice_number();
@@ -293,6 +301,7 @@ ISR(PORTA_PORT_vect)
 			set_dice_number(nr);
 			set_max_dice_number(nr);
 		}
+		#endif
 	}
 	// prevent from going to sleep while number is blinking (happens after timeout when button is released)
 	else if (current_dice_state != 3)
@@ -307,7 +316,10 @@ ISR(PORTA_PORT_vect)
 int main(void)
 {
 	atmel_start_init();
-	read_max_dice_number();
+	#ifdef MENU_ENABLE
+		read_max_dice_number();
+	#endif
+	lfsr_seed(0xabcd);
 	goto_sleep();
 	while (1){}
 }
@@ -329,14 +341,13 @@ void goto_sleep(void){
 	button_presses_menu = 0;
 	display_bat_lvl = 0;
 
-	// unload RC network from button
-	BTN_set_dir(PORT_DIR_OUT);
-	BTN_set_level(false);
-
 	TCB0.CTRLA &= ~(1 << TCB_ENABLE_bp);
 	TCA0.SINGLE.CTRLA &= ~(1 << TCA_SINGLE_ENABLE_bp);
 	leds_off();
 	reset_state();
+	
+	BTN_set_dir(PORT_DIR_OUT);
+	BTN_set_level(false);
 
 	if (++_executions >= EXECS_TILL_NEW_SEED)
 	{
@@ -359,9 +370,12 @@ void goto_sleep(void){
 		*((uint8_t *)&PORTB + 0x10 + i) = 0b00001100;
 		*((uint8_t *)&PORTC + 0x10 + i) = 0b00001100;
 	}
+		
 	BTN_set_dir(PORT_DIR_IN);
 	BTN_set_pull_mode(PORT_PULL_OFF);
 	BTN_set_isc(PORT_ISC_BOTHEDGES_gc);
+	
+	button_last_state = BTN_get_level();
 
 	sleep_cpu();
 }
@@ -370,7 +384,7 @@ void generate_new_seed(void){
 	adc_enable();
 	enable_rng_adc_channels();
 	uint16_t _seed = adc_result - number;
-	for (uint8_t i = 0; i<5; i++)
+	for (uint8_t i = 0; i<2; i++)
 	{
 		_seed ^= (((ADC_0_get_conversion(9) & 0x07) << 3) + (ADC_0_get_conversion(3) & 0x07));
 		_seed = (_seed << 6) + ((ADC_0_get_conversion(3) & 0x07) << 3) + ((ADC_0_get_conversion(9) & 0x07));
@@ -378,7 +392,7 @@ void generate_new_seed(void){
 	}
 	disable_rng_adc_channels();
 	adc_disable();
-	srand(_seed);
+	lfsr_seed(_seed);
 }
 
 void read_cell_voltage(void){
