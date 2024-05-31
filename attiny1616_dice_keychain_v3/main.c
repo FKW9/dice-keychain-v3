@@ -7,39 +7,26 @@
 #include <avr/eeprom.h>
 #include <lfsr_random.h>
 
-#if F_CPU == 625000
-	#define DELAY_SLOWDOWN		20	// 20
-	#define DELAY_SLOWDOWN_A    50
-	#define DELAY_SLOWDOWN_B    4
-	#define DELAY_SHUFFLE		8	// 8
-	#define TIMEOUT_SHUFFLE		350	// 400 = ~4sec
-	#define BTN_MIN_HOLD_TIME	30
-	#define MENU_WAIT_TIME		300
-	#define MENU_TIMEOUT		50
-	#define BAT_LEVEL_TIME      160
-	#define DELAY_BAT_BLINK     25
-	#define DELAY_MENU_BLINK    15
-	#define DELAY_MENU_BLINK_NEXT_COLOR 5
-#elif F_CPU == 833333
-	#define DELAY_SLOWDOWN		27
-	#define DELAY_SLOWDOWN_A    67
-	#define DELAY_SLOWDOWN_B    5
-	#define DELAY_SHUFFLE		11
-	#define TIMEOUT_SHUFFLE		470
-	#define BTN_MIN_HOLD_TIME	40
-	#define MENU_WAIT_TIME		400
-	#define MENU_TIMEOUT		67
-	#define BAT_LEVEL_TIME      213
-	#define DELAY_BAT_BLINK     33
-	#define DELAY_MENU_BLINK    20
-	#define DELAY_MENU_BLINK_NEXT_COLOR 7
-#endif
+#define DELAY_SLOWDOWN		27
+#define DELAY_SLOWDOWN_A    67
+#define DELAY_SLOWDOWN_B    5
+#define DELAY_SHUFFLE		11
+#define TIMEOUT_SHUFFLE		1700
+#define BTN_MIN_HOLD_TIME	40
+#define MENU_WAIT_TIME		400
+#define MENU_TIMEOUT		67
+#define BAT_LEVEL_TIME      213
+#define DELAY_BAT_BLINK     33
+#define DELAY_MENU_BLINK    20
+#define DELAY_MENU_BLINK_NEXT_COLOR 7
 
 #define MENU_PRESSES_NEEDED 3
 #define EXECS_TILL_NEW_SEED 16	// 5
-#define BLINK_COUNT			3	// 3
+#define BLINK_COUNT			5	// 3
 #define EEPROM_ADDRESS		37
-// #define MENU_ENABLE
+// #define ENABLE_MENU
+// #define ENABLE_SHOW_BAT_LVL
+// #define ENABLE_SHUFFLE_NUMBER_IS_RANDOM
 
 void read_cell_voltage(void);
 void prepare_sleep(void);
@@ -51,6 +38,7 @@ void generate_new_seed(void);
 void start_init_after_sleep(void);
 void adc_disable(void);
 void adc_enable(void);
+uint8_t get_random_dice_number();
 void read_max_dice_number(void);
 void save_max_dice_number(void);
 
@@ -110,13 +98,19 @@ ISR(TCA0_CMP0_vect)
 				t_shuffle_number = 0;
 				next_color();
 				set_dice_number(shuffle_number);
-				if (++shuffle_number > get_max_dice_number()){
-					shuffle_number = 1;
-				}
+				#ifndef ENABLE_SHUFFLE_NUMBER_IS_RANDOM
+					if (++shuffle_number > get_max_dice_number()){
+						shuffle_number = 1;
+					}
+				#else
+					shuffle_number = get_random_dice_number();
+				#endif
 			}
 
 			if (++t_timeout > TIMEOUT_SHUFFLE){
-				display_bat_lvl = 1;
+				#ifdef ENABLE_SHOW_BAT_LVL
+					display_bat_lvl = 1;
+				#endif
 				current_dice_state = 3;
 			}
 		break;
@@ -129,7 +123,7 @@ ISR(TCA0_CMP0_vect)
 			// set number once entering slowdown
 			if (t_slowdown_number == 0)
 			{
-				number = lfsr_random() % get_max_dice_number() + 1;
+				number = get_random_dice_number();
 			}
 
 			// when button is released, start slowing down then blink the resulting number
@@ -280,7 +274,7 @@ ISR(PORTA_PORT_vect)
 		// pressing button before entering sleep mode (= reroll)
 		reset_state();
 		current_dice_state = 2;
-		#ifdef MENU_ENABLE
+		#ifdef ENABLE_MENU
 			if(++button_presses_menu >= MENU_PRESSES_NEEDED){
 				previous_dice_state = 3;
 				current_dice_state = 4;
@@ -291,7 +285,7 @@ ISR(PORTA_PORT_vect)
 	}
 	else if (current_dice_state == 4 && previous_dice_state == 3)
 	{
-		#ifdef MENU_ENABLE
+		#ifdef ENABLE_MENU
 		if(BTN_get_level() == 1 && exit_menu == 0){
 			_t_menu_timeout = 0; // reset timeout
 			uint8_t nr = get_max_dice_number();
@@ -316,7 +310,7 @@ ISR(PORTA_PORT_vect)
 int main(void)
 {
 	atmel_start_init();
-	#ifdef MENU_ENABLE
+	#ifdef ENABLE_MENU
 		read_max_dice_number();
 	#endif
 	lfsr_seed(0xabcd);
@@ -442,6 +436,11 @@ void read_cell_voltage(void){
 	ADC_EN_set_isc(PORT_ISC_INPUT_DISABLE_gc);
 
 	adc_disable();
+}
+
+uint8_t get_random_dice_number()
+{
+	return (lfsr_random() + TCA0.SINGLE.CNT) % get_max_dice_number() + 1;
 }
 
 void read_max_dice_number()

@@ -324,9 +324,6 @@
     <Compile Include="src\vref.c">
       <SubType>compile</SubType>
     </Compile>
-    <None Include="main_test.c">
-      <SubType>compile</SubType>
-    </None>
     <Compile Include="Config\RTE_Components.h">
       <SubType>compile</SubType>
     </Compile>

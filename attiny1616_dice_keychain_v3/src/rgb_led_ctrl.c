@@ -59,7 +59,7 @@ uint8_t get_bat_lvl(void)
 
 void set_bat_color(char rgb)
 {
-	bat_color= rgb;
+	bat_color = rgb;
 }
 
 uint8_t get_mode(void)
